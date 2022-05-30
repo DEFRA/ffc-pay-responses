@@ -1,8 +1,10 @@
 const blobStorage = require('../storage')
 const isAcknowledgementFile = require('./is-acknowledgement-file')
 const isReturnFile = require('./is-return-file')
+const isPaymentFile = require('./is-payment-file')
 const processAcknowledgement = require('./process-acknowledgement')
 const processReturn = require('./process-return')
+const processPaymentFile = require('./process-payment-file')
 const config = require('../config')
 
 const start = async () => {
@@ -15,6 +17,8 @@ const start = async () => {
           await processAcknowledgement(filename)
         } else if (isReturnFile(filename)) {
           await processReturn(filename)
+        } else if (isPaymentFile(filename)) {
+          await processPaymentFile(filename)
         }
       }
     }

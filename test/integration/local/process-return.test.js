@@ -19,7 +19,7 @@ let container
 const TEST_FILE = path.resolve(__dirname, '../../files/return.csv')
 const TEST_INVALID_FILE = path.resolve(__dirname, '../../files/broken-return.csv')
 
-describe('process acknowledgement', () => {
+describe('process return', () => {
   beforeAll(async () => {
     blobServiceClient = BlobServiceClient.fromConnectionString(config.storageConfig.connectionStr)
     container = blobServiceClient.getContainerClient(config.storageConfig.container)

@@ -75,10 +75,16 @@ const quarantineFile = (filename, quarantineFilename) => {
   return moveFile(config.inboundFolder, config.quarantineFolder, filename, quarantineFilename)
 }
 
+const deleteFile = async (filename) => {
+  const sourceBlob = await getBlob(config.inboundFolder, filename)
+  await sourceBlob.delete()
+}
+
 module.exports = {
   getInboundFileList,
   downloadFile,
   archiveFile,
   quarantineFile,
+  deleteFile,
   blobServiceClient
 }
