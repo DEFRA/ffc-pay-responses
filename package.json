@@ -23,8 +23,8 @@
   ],
   "license": "OGL-UK-3.0",
   "dependencies": {
-    "@azure/identity": "4.3.0",
-    "@azure/storage-blob": "12.15.0",
+    "@azure/identity": "4.4.1",
+    "@azure/storage-blob": "12.24.0",
     "applicationinsights": "2.7.3",
     "ffc-messaging": "2.9.1",
     "ffc-pay-event-publisher": "1.2.0",
