@@ -23,16 +23,16 @@
   ],
   "license": "OGL-UK-3.0",
   "dependencies": {
-    "@azure/identity": "4.3.0",
-    "@azure/storage-blob": "12.15.0",
-    "applicationinsights": "2.7.3",
-    "ffc-messaging": "2.9.1",
+    "@azure/identity": "4.4.1",
+    "@azure/storage-blob": "12.24.0",
+    "applicationinsights": "2.9.6",
+    "ffc-messaging": "2.10.1",
     "ffc-pay-event-publisher": "1.2.0",
     "log-timestamp": "0.3.0",
-    "moment": "2.29.4",
-    "pg": "8.11.3",
+    "moment": "2.30.1",
+    "pg": "8.12.0",
     "pg-hstore": "2.3.4",
-    "sequelize": "6.32.1",
+    "sequelize": "6.37.3",
     "xml2js": "0.6.2"
   },
   "devDependencies": {
