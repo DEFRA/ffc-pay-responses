@@ -37,5 +37,5 @@ services:
       POSTGRES_USERNAME: postgres
 
   ffc-pay-responses-azurite:
-    image: mcr.microsoft.com/azure-storage/azurite:3.17.1
+    image: mcr.microsoft.com/azure-storage/azurite:3.32.0
     command: "azurite-blob --skipApiVersionCheck --loose --blobHost 0.0.0.0"
