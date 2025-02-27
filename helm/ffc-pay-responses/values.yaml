@@ -50,7 +50,7 @@ postgresService:
   postgresSchema: public
   postgresUser: postgres
 
-aadPodIdentity: true
+workloadIdentity: true
 
 azureIdentity:
   clientID: not-a-real-clientID

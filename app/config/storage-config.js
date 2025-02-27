@@ -9,7 +9,8 @@ const schema = Joi.object({
   quarantineFolder: Joi.string().default('quarantine'),
   returnFolder: Joi.string().default('return'),
   useConnectionStr: Joi.boolean().default(false),
-  createContainers: Joi.boolean().default(false)
+  createContainers: Joi.boolean().default(false),
+  managedIdentityClientId: Joi.string().optional()
 })
 
 const config = {
@@ -21,7 +22,8 @@ const config = {
   quarantineFolder: process.env.AZURE_STORAGE_QUARANTINE,
   returnFolder: process.env.AZURE_STORAGE_RETURN,
   useConnectionStr: process.env.AZURE_STORAGE_USE_CONNECTION_STRING,
-  createContainers: process.env.AZURE_STORAGE_CREATE_CONTAINERS
+  createContainers: process.env.AZURE_STORAGE_CREATE_CONTAINERS,
+  managedIdentityClientId: process.env.AZURE_CLIENT_ID
 }
 
 const result = schema.validate(config, {

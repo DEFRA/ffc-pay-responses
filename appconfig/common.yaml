@@ -1,0 +1,4 @@
+container.acknowledgementTopicAddress: queue:ffc-pay-acknowledgement
+container.returnTopicAddress: queue:ffc-pay-return
+container.eventsTopicAddress: queue:ffc-pay-events
+container.paymentSubmitTopicAddress: queue:ffc-pay-submit
