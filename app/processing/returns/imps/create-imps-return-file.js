@@ -21,7 +21,6 @@ const createImpsReturnFile = async (acknowledgements, filename, transaction) => 
   if (config.useV2ReturnFiles) {
     acknowledgements = await getImpsPendingAcknowledgements(sequence, transaction)
     const receivedAllAcknowledgements = await allImpsAcknowledgementsReceived(acknowledgements, sequence, transaction)
-    console.log(receivedAllAcknowledgements)
     if (!receivedAllAcknowledgements) {
       await updateSequence({ schemeId: IMPS, nextReturn: sequence }, transaction)
       return
