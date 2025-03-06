@@ -7,13 +7,15 @@ const { DEVELOPMENT, TEST, PRODUCTION } = require('../constants/environments')
 const schema = Joi.object({
   env: Joi.string().valid(DEVELOPMENT, TEST, PRODUCTION).default(DEVELOPMENT),
   processingInterval: Joi.number().default(10000),
-  useV2Events: Joi.boolean().default(true)
+  useV2Events: Joi.boolean().default(true),
+  useV2ReturnFiles: Joi.boolean().default(true)
 })
 
 const config = {
   env: process.env.NODE_ENV,
   processingInterval: process.env.PROCESSING_INTERVAL,
-  useV2Events: process.env.USE_V2_EVENTS
+  useV2Events: process.env.USE_V2_EVENTS,
+  useV2ReturnFiles: process.env.USE_V2_RETURN_FILES
 }
 
 const result = schema.validate(config, {

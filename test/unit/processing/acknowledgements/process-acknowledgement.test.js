@@ -19,6 +19,7 @@ const { parseAcknowledgementFile } = require('../../../../app/processing/acknowl
 jest.mock('../../../../app/processing/quarantine-file')
 const { quarantineFile } = require('../../../../app/processing/quarantine-file')
 
+const config = require('../../../../app/config')
 const { processAcknowledgement } = require('../../../../app/processing/acknowledgements/process-acknowledgement')
 
 const filename = 'mock_0001_Ack.xml'
@@ -75,7 +76,7 @@ describe('process acknowledgement', () => {
   test('creates IMPS return file if file is IMPS acknowledgement and acknowledgements in file', async () => {
     isImpsAcknowledgementFile.mockReturnValue(true)
     await processAcknowledgement(filename, transaction)
-    expect(createImpsReturnFile).toHaveBeenCalledWith(transaction)
+    expect(createImpsReturnFile).toHaveBeenCalledWith(messages, filename, transaction)
   })
 
   test('does not create IMPS return file if file is IMPS acknowledgement but no acknowledgements in file', async () => {
@@ -93,5 +94,25 @@ describe('process acknowledgement', () => {
   test('archives file if acknowledgements in file', async () => {
     await processAcknowledgement(filename, transaction)
     expect(archiveFile).toHaveBeenCalledWith(filename)
+  })
+
+  test('calls saveImpsAcknowledgements if file is IMPS acknowledgement and useV2ReturnFiles is true', async () => {
+    isImpsAcknowledgementFile.mockReturnValue(true)
+    config.useV2ReturnFiles = true
+    await processAcknowledgement(filename, transaction)
+    expect(saveImpsAcknowledgements).toHaveBeenCalledWith(messages, transaction)
+  })
+
+  test('does not call saveImpsAcknowledgements if file is IMPS acknowledgement and useV2ReturnFiles is false', async () => {
+    isImpsAcknowledgementFile.mockReturnValue(true)
+    config.useV2ReturnFiles = false
+    await processAcknowledgement(filename, transaction)
+    expect(saveImpsAcknowledgements).not.toHaveBeenCalled()
+  })
+
+  test('does not call saveImpsAcknowledgements if file is not IMPS acknowledgement', async () => {
+    isImpsAcknowledgementFile.mockReturnValue(false)
+    await processAcknowledgement(filename, transaction)
+    expect(saveImpsAcknowledgements).not.toHaveBeenCalled()
   })
 })
