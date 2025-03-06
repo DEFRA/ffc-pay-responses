@@ -28,6 +28,7 @@ describe('get IMPS acknowledgement lines', () => {
 
   beforeEach(async () => {
     jest.clearAllMocks()
+    await db.sequelize.sync({ force: true })
     transaction = await db.sequelize.transaction()
     await db.impsBatchNumber.bulkCreate([mockBatchNumber], { transaction })
   })
