@@ -57,7 +57,6 @@ const {
 
 describe('createImpsReturnFile', () => {
   const acknowledgements = [{ invoiceNumber: 'INV001', frn: 'FRN001', success: true }, { invoiceNumber: 'INV002', frn: 'FRN002', success: true }]
-  const filename = 'mock_filename'
   const transaction = 'mock_transaction'
   const sequence = 1
   const sequenceString = '0001'
@@ -78,7 +77,7 @@ describe('createImpsReturnFile', () => {
   })
 
   test('should create return file with proper content', async () => {
-    await createImpsReturnFile(acknowledgements, filename, transaction)
+    await createImpsReturnFile(acknowledgements, transaction)
     expect(getAndIncrementSequence).toHaveBeenCalledWith(IMPS, transaction)
     expect(getImpsAcknowledgementLines).toHaveBeenCalledWith(acknowledgements, sequence, transaction)
     expect(getImpsPendingReturns).toHaveBeenCalledWith(transaction)
@@ -91,24 +90,24 @@ describe('createImpsReturnFile', () => {
 
   test('should return early if not all acknowledgements are received', async () => {
     allImpsAcknowledgementsReceived.mockResolvedValue(false)
-    await createImpsReturnFile(acknowledgements, filename, transaction)
+    await createImpsReturnFile(acknowledgements, transaction)
     expect(updateSequence).toHaveBeenCalledWith({ schemeId: IMPS, nextReturn: sequence }, transaction)
     expect(publishReturnFile).not.toHaveBeenCalled()
   })
 
   test('should call setImpsAcknowledgementsExported if useV2ReturnFiles is true', async () => {
-    await createImpsReturnFile(acknowledgements, filename, transaction)
+    await createImpsReturnFile(acknowledgements, transaction)
     expect(setImpsAcknowledgementsExported).toHaveBeenCalledWith(acknowledgements, transaction)
   })
 
   test('should not call setImpsAcknowledgementsExported if useV2ReturnFiles is false', async () => {
     config.useV2ReturnFiles = false
-    await createImpsReturnFile(acknowledgements, filename, transaction)
+    await createImpsReturnFile(acknowledgements, transaction)
     expect(setImpsAcknowledgementsExported).not.toHaveBeenCalled()
   })
 
   test('should call getImpsPendingAcknowledgements when useV2ReturnFiles is true', async () => {
-    await createImpsReturnFile(acknowledgements, filename, transaction)
+    await createImpsReturnFile(acknowledgements, transaction)
     expect(getImpsPendingAcknowledgements).toHaveBeenCalledWith(sequence, transaction)
   })
 })

@@ -11,7 +11,7 @@ const { setImpsAcknowledgementsExported } = require('./set-imps-acknowledgements
 const { updateSequence } = require('../sequence/update-sequence')
 const config = require('../../../config')
 
-const createImpsReturnFile = async (acknowledgements, filename, transaction) => {
+const createImpsReturnFile = async (acknowledgements, transaction) => {
   const { sequence, sequenceString } = await getAndIncrementSequence(IMPS, transaction)
 
   const returnFilename = `RET_IMPS_AP_${sequenceString}.INT`

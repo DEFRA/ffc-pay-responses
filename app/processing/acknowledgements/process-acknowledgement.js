@@ -23,7 +23,7 @@ const processAcknowledgement = async (filename, transaction) => {
       if (config.useV2ReturnFiles) {
         await saveImpsAcknowledgements(messages, transaction)
       }
-      await createImpsReturnFile(messages, filename, transaction)
+      await createImpsReturnFile(messages, transaction)
     }
     console.log('Acknowledgements published:', util.inspect(messages, false, null, true))
     await archiveFile(filename)

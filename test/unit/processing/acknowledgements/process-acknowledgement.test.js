@@ -76,7 +76,7 @@ describe('process acknowledgement', () => {
   test('creates IMPS return file if file is IMPS acknowledgement and acknowledgements in file', async () => {
     isImpsAcknowledgementFile.mockReturnValue(true)
     await processAcknowledgement(filename, transaction)
-    expect(createImpsReturnFile).toHaveBeenCalledWith(messages, filename, transaction)
+    expect(createImpsReturnFile).toHaveBeenCalledWith(messages, transaction)
   })
 
   test('does not create IMPS return file if file is IMPS acknowledgement but no acknowledgements in file', async () => {
