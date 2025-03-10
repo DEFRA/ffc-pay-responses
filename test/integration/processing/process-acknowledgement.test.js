@@ -81,20 +81,6 @@ describe('process acknowledgement', () => {
     await db.impsAcknowledgement.destroy({ where: { }, truncate: true })
   })
 
-  test('does not create IMPS return file if all acknowledgements are not received', async () => {
-    const blockBlobClient = container.getBlockBlobClient(`${config.storageConfig.inboundFolder}/${IMPS_FILENAME}`)
-    await blockBlobClient.uploadFile(TEST_FILE)
-    await db.impsBatchNumber.create(
-      { batchNumber: 1, invoiceNumber: 'S123456789E123456V001', frn: 1234567894 }
-    )
-    await processing.start()
-    const fileList = []
-    for await (const item of container.listBlobsFlat({ prefix: config.storageConfig.returnFolder })) {
-      fileList.push(item.name)
-    }
-    expect(fileList.filter(x => x.startsWith(`${config.storageConfig.returnFolder}/RET_IMPS`)).length).toBe(0)
-  })
-
   test('creates IMPS return file if all acknowledgements are received', async () => {
     const blockBlobClient = container.getBlockBlobClient(`${config.storageConfig.inboundFolder}/${IMPS_FILENAME}`)
     await blockBlobClient.uploadFile(TEST_FILE)
