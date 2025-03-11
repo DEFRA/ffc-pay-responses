@@ -15,7 +15,7 @@ const config = {
   env: process.env.NODE_ENV,
   processingInterval: process.env.PROCESSING_INTERVAL,
   useV2Events: process.env.USE_V2_EVENTS,
-  useV2ReturnFiles: process.env.USE_V2_RETURN_FILES ?? false
+  useV2ReturnFiles: (process.env.USE_V2_RETURN_FILES === 'true' || process.env.USE_V2_RETURN_FILES === true) ?? false
 }
 
 const result = schema.validate(config, {
