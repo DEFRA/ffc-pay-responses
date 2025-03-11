@@ -1,6 +1,15 @@
 resources:
+  identity: pay-responses
+  postgreSql:
+    name: ffc-pay-responses
   topics:
-    - name: paymentSubmit
-    - name: acknowledgement
-    - name: return
-    - name: event
+    - name: ffc-pay-submit
+      role: receiver
+      subscriptions:
+        - name: ffc-pay-responses
+    - name: ffc-pay-acknowledgement
+      role: sender
+    - name: ffc-pay-return
+      role: sender
+    - name: ffc-pay-events
+      role: sender
