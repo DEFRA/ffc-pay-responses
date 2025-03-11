@@ -104,6 +104,7 @@ describe('process acknowledgement', () => {
 
   test('sends frn if file valid', async () => {
     await processing.start()
+
     expect(mockSendBatchMessages.mock.calls[0][0][0].body.frn).toBe(1234567890)
   })
 
