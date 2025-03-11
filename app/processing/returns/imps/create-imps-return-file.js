@@ -9,19 +9,22 @@ const { getImpsPendingAcknowledgements } = require('./get-imps-pending-acknowled
 const { allImpsAcknowledgementsReceived } = require('./all-imps-acknowledgements-received')
 const { setImpsAcknowledgementsExported } = require('./set-imps-acknowledgements-exported')
 const { updateSequence } = require('../sequence/update-sequence')
+const config = require('../../../config')
 
-const createImpsReturnFile = async (transaction) => {
+const createImpsReturnFile = async (acknowledgements, transaction) => {
   const { sequence, sequenceString } = await getAndIncrementSequence(IMPS, transaction)
 
   const returnFilename = `RET_IMPS_AP_${sequenceString}.INT`
   const controlFilename = `CTL_${returnFilename}`
 
   const responseData = []
-  const acknowledgements = await getImpsPendingAcknowledgements(sequence, transaction)
-  const receivedAllAcknowledgements = await allImpsAcknowledgementsReceived(acknowledgements, sequence, transaction)
-  if (!receivedAllAcknowledgements) {
-    await updateSequence({ schemeId: IMPS, nextReturn: sequence }, transaction)
-    return
+  if (config.useV2ReturnFiles) {
+    acknowledgements = await getImpsPendingAcknowledgements(sequence, transaction)
+    const receivedAllAcknowledgements = await allImpsAcknowledgementsReceived(acknowledgements, sequence, transaction)
+    if (!receivedAllAcknowledgements) {
+      await updateSequence({ schemeId: IMPS, nextReturn: sequence }, transaction)
+      return
+    }
   }
 
   const { acknowledgementLines, batchNumbers } = await getImpsAcknowledgementLines(acknowledgements, sequence, transaction)
@@ -36,7 +39,9 @@ const createImpsReturnFile = async (transaction) => {
   const returnFileContent = responseData.join('\r\n')
 
   await publishReturnFile(returnFilename, returnFileContent, controlFilename, null)
-  await setImpsAcknowledgementsExported(acknowledgements, transaction)
+  if (config.useV2ReturnFiles) {
+    await setImpsAcknowledgementsExported(acknowledgements, transaction)
+  }
 }
 
 module.exports = {
