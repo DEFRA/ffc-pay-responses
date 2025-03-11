@@ -42,6 +42,7 @@ container:
   quarantineFolder: quarantine
   returnFolder: return
   useV2Events: true
+  useV2ReturnFiles: true
 
 postgresService:
   postgresDb: ffc_pay_responses
