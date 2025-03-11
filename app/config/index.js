@@ -8,7 +8,7 @@ const schema = Joi.object({
   env: Joi.string().valid(DEVELOPMENT, TEST, PRODUCTION).default(DEVELOPMENT),
   processingInterval: Joi.number().default(10000),
   useV2Events: Joi.boolean().default(true),
-  useV2ReturnFiles: Joi.boolean().default(true)
+  useV2ReturnFiles: Joi.boolean().optional().default(true)
 })
 
 const config = {
