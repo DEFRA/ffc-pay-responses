@@ -43,6 +43,7 @@ container:
   returnFolder: return
   useV2Events: true
   useV2ReturnFiles: true
+  processingActive: true
 
 postgresService:
   postgresDb: ffc_pay_responses

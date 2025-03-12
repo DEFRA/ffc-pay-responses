@@ -29,7 +29,7 @@ services:
       POSTGRES_SCHEMA_NAME: ${POSTGRES_SCHEMA_NAME:-public}
       POSTGRES_USERNAME: ${POSTGRES_SCHEMA_USERNAME:-postgres}
       USE_V2_RETURN_FILES: ${USE_V2_RETURN_FILES:-"true"}
-
+      PROCESSING_ACTIVE: ${PROCESSING_ACTIVE:-true}
   ffc-pay-responses-postgres:
     image: postgres:11.4-alpine
     environment:
