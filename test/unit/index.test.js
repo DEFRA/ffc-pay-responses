@@ -1,18 +1,56 @@
-jest.mock('../../app/processing')
-const mockProcessing = require('../../app/processing')
+const config = require('../../app/config')
+
 jest.mock('../../app/messaging')
-const mockMessaging = require('../../app/messaging')
+const { start: mockStartMessaging } = require('../../app/messaging')
+jest.mock('../../app/processing')
+const { start: mockStartProcessing } = require('../../app/processing')
 
-describe('app', () => {
+const startApp = require('../../app')
+
+describe('app start', () => {
   beforeEach(() => {
-    require('../../app')
+    jest.clearAllMocks()
   })
 
-  test('starts processing', async () => {
-    expect(mockProcessing.start).toHaveBeenCalled()
+  test('starts processing when active is true', async () => {
+    config.processingActive = true
+    await startApp()
+    expect(mockStartProcessing).toHaveBeenCalledTimes(1)
   })
 
-  test('starts messaging', async () => {
-    expect(mockMessaging.start).toHaveBeenCalled()
+  test('does not start processing if active is false', async () => {
+    config.processingActive = false
+    await startApp()
+    expect(mockStartProcessing).toHaveBeenCalledTimes(0)
+  })
+
+  test('starts messaging when active is true', async () => {
+    config.processingActive = true
+    await startApp()
+    expect(mockStartMessaging).toHaveBeenCalledTimes(1)
+  })
+
+  test('does not start messaging when active is false', async () => {
+    config.processingActive = false
+    await startApp()
+    expect(mockStartMessaging).toHaveBeenCalledTimes(0)
+  })
+
+  test('does not log console.info when active is true', async () => {
+    config.processingActive = true
+    const consoleInfoSpy = jest.spyOn(console, 'info').mockImplementation(() => {})
+    await startApp()
+    expect(consoleInfoSpy).not.toHaveBeenCalled()
+    consoleInfoSpy.mockRestore()
+  })
+
+  test('logs console.info when active is false', async () => {
+    config.processingActive = false
+    const consoleInfoSpy = jest.spyOn(console, 'info').mockImplementation(() => {})
+    await startApp()
+    expect(consoleInfoSpy).toHaveBeenCalledWith(
+      expect.stringContaining('Processing capabilities are currently not enabled in this environment')
+    )
+    consoleInfoSpy.mockRestore()
   })
 })
