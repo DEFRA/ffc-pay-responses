@@ -8,6 +8,7 @@ services:
     image: ffc-pay-responses-development
     container_name: ffc-pay-responses-development
     ports:
+      - "3012:3012"
       - "9244:9229"
     volumes:
       - ./app:/home/node/app
