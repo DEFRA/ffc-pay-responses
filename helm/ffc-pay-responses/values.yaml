@@ -25,6 +25,7 @@ container:
   requestCpu: 10m
   limitMemory: 250Mi
   limitCpu: 250m
+  port: 3012
   messageQueueHost: namespace.servicebus.windows.net
   acknowledgementTopicAddress: ffc-pay-acknowledgement
   returnTopicAddress: ffc-pay-return
@@ -44,6 +45,22 @@ container:
   useV2Events: true
   useV2ReturnFiles: true
   processingActive: true
+
+readinessProbe:
+  path: /healthy
+  port: 3012
+  initialDelaySeconds: 60
+  periodSeconds: 120
+  failureThreshold: 5
+  timeoutSeconds: 30
+
+livenessProbe:
+  path: /healthz
+  port: 3012
+  initialDelaySeconds: 70
+  periodSeconds: 120
+  failureThreshold: 5
+  timeoutSeconds: 30
 
 postgresService:
   postgresDb: ffc_pay_responses

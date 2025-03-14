@@ -4,6 +4,9 @@ services:
       context: .
       target: production
     image: ffc-pay-responses
+    ports:
+      - "3012:3012"
+      - "9244:9229"
     container_name: ffc-pay-responses
     depends_on:
       - ffc-pay-responses-azurite

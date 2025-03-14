@@ -3,6 +3,7 @@ const mqConfig = require('./mq-config')
 const storageConfig = require('./storage-config')
 const dbConfig = require('./db-config')
 const { DEVELOPMENT, TEST, PRODUCTION } = require('../constants/environments')
+const serverConfig = require('./server')
 
 const schema = Joi.object({
   env: Joi.string().valid(DEVELOPMENT, TEST, PRODUCTION).default(DEVELOPMENT),
@@ -40,5 +41,6 @@ value.eventTopic = mqConfig.eventTopic
 value.eventsTopic = mqConfig.eventsTopic
 value.storageConfig = storageConfig
 value.dbConfig = dbConfig
+value.serverConfig = serverConfig
 
 module.exports = value
