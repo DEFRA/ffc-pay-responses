@@ -39,13 +39,13 @@ describe('app start', () => {
   })
 
   test('starts server when active is true', async () => {
-    config.active = true
+    config.processingActive = true
     await startApp()
     expect(mockStartServer).toHaveBeenCalledTimes(1)
   })
 
   test('starts server when active is false', async () => {
-    config.active = false
+    config.processingActive = false
     await startApp()
     expect(mockStartServer).toHaveBeenCalledTimes(1)
   })
