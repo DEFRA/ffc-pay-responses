@@ -2,6 +2,7 @@ services:
   ffc-pay-responses:
     command: npm run test:debug
     ports:
+      - "3012:3012"
       - "9243:9229"
     volumes:
       - ./app:/home/node/app

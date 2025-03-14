@@ -44,6 +44,7 @@ container:
   useV2Events: true
   useV2ReturnFiles: true
   processingActive: true
+  port: 3012
 
 postgresService:
   postgresDb: ffc_pay_responses
@@ -51,6 +52,22 @@ postgresService:
   postgresPort: 5432
   postgresSchema: public
   postgresUser: postgres
+
+readinessProbe:
+  path: /healthy
+  port: 3012
+  initialDelaySeconds: 60
+  periodSeconds: 120
+  failureThreshold: 5
+  timeoutSeconds: 30
+
+livenessProbe:
+  path: /healthz
+  port: 3012
+  initialDelaySeconds: 70
+  periodSeconds: 120
+  failureThreshold: 5
+  timeoutSeconds: 30
 
 workloadIdentity: true
 
