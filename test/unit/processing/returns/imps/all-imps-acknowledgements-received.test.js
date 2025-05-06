@@ -49,4 +49,13 @@ describe('all IMPS acknowledgements received', () => {
     const result = await allImpsAcknowledgementsReceived(acknowledgements, 1, transaction)
     expect(result).toBe(false)
   })
+
+  test('returns false if invoicesForSequence.length is 0', async () => {
+    await db.impsBatchNumber.destroy({ where: { batchNumber: '1' }, transaction })
+    const acknowledgements = [
+      { batchNumber: '1', invoiceNumber: 'S123456789A123456V001', frn: 1234567890 }
+    ]
+    const result = await allImpsAcknowledgementsReceived(acknowledgements, 1, transaction)
+    expect(result).toBe(false)
+  })
 })
