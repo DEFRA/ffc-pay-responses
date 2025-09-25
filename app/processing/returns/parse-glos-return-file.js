@@ -35,12 +35,29 @@ const parseGlosReturnFile = (csv, filename) => {
 
 // Helper function to handle quoted CSV fields
 const parseCsvLine = (line) => {
-  const regex = /(?:^|,)(?:"([^"]*)"|([^",]*))/g
   const result = []
-  let match
-  while ((match = regex.exec(line)) !== null) {
-    result.push(match[1] || match[2])
+  let currentField = ''
+  let inQuotes = false
+
+  for (let i = 0; i < line.length; i++) {
+    const char = line[i]
+
+    if (char === '"') {
+      inQuotes = !inQuotes
+    } else if (char === ',' && !inQuotes) {
+      result.push(currentField.replace(/""/g, '"'))
+      currentField = ''
+    } else {
+      currentField += char
+    }
   }
+
+  if (currentField.length > 0) {
+    result.push(currentField.replace(/""/g, '"'))
+  } else {
+    result.push('')
+  }
+
   return result
 }
 
