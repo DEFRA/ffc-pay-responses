@@ -43,7 +43,7 @@ const parseCsvLine = (line) => {
     if (char === '"') {
       inQuotes = !inQuotes
     } else if (char === ',' && !inQuotes) {
-      result.push(currentField.replaceAll(/""/g, '"'))
+      result.push(currentField.replaceAll('""', '"'))
       currentField = ''
     } else {
       currentField += char
@@ -51,7 +51,7 @@ const parseCsvLine = (line) => {
   }
 
   if (currentField.length > 0) {
-    result.push(currentField.replaceAll(/""/g, '"'))
+    result.push(currentField.replaceAll('""', '"'))
   } else {
     result.push('')
   }
