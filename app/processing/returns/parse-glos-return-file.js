@@ -16,7 +16,7 @@ const parseGlosReturnFile = (csv, filename) => {
         frn: Number(row[1]),
         agreementNumber: row[2],
         claimNumber: row[3],
-        settlementDate: row[4] !== '' ? moment(row[4], ['YYYY-MM-DD', 'DD/MM/YYYY']).toISOString() : undefined,
+        settlementDate: row[4] === '' ? undefined : moment(row[4], ['YYYY-MM-DD', 'DD/MM/YYYY']).toISOString(),
         value: convertToPence(row[5]),
         reference: row[6],
         bankAccount: row[7],
@@ -35,12 +35,27 @@ const parseGlosReturnFile = (csv, filename) => {
 
 // Helper function to handle quoted CSV fields
 const parseCsvLine = (line) => {
-  const regex = /(?:^|,)(?:"([^"]*)"|([^",]*))/g
   const result = []
-  let match
-  while ((match = regex.exec(line)) !== null) {
-    result.push(match[1] || match[2])
+  let currentField = ''
+  let inQuotes = false
+
+  for (const char of line) {
+    if (char === '"') {
+      inQuotes = !inQuotes
+    } else if (char === ',' && !inQuotes) {
+      result.push(currentField.replaceAll('""', '"'))
+      currentField = ''
+    } else {
+      currentField += char
+    }
   }
+
+  if (currentField.length > 0) {
+    result.push(currentField.replaceAll('""', '"'))
+  } else {
+    result.push('')
+  }
+
   return result
 }
 
