@@ -25,24 +25,11 @@ const error = require('../../mocks/error')
 
 describe('V2 quarantine ack event', () => {
   beforeEach(() => {
-    config.useV2Events = true
     config.eventsTopic = 'v2-events'
   })
 
   afterEach(() => {
     jest.clearAllMocks()
-  })
-
-  test('should send V2 event if V2 events enabled', async () => {
-    config.useV2Events = true
-    await sendResponsesQuarantineEvent(filename, error)
-    expect(mockPublishEvent).toHaveBeenCalled()
-  })
-
-  test('should not send V2 event if V2 events disabled', async () => {
-    config.useV2Events = false
-    await sendResponsesQuarantineEvent(filename, error)
-    expect(mockPublishEvent).not.toHaveBeenCalled()
   })
 
   test('should send event to V2 topic', async () => {
