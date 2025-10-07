@@ -28,7 +28,6 @@ data:
   AZURE_STORAGE_ARCHIVE: {{ quote .Values.container.archiveFolder }}
   AZURE_STORAGE_QUARANTINE: {{ quote .Values.container.quarantineFolder }}
   AZURE_STORAGE_RETURN: {{ quote .Values.container.returnFolder }}
-  USE_V2_EVENTS: {{ quote .Values.container.useV2Events }}
   USE_V2_RETURN_FILES: {{ quote .Values.container.useV2ReturnFiles }}
   POSTGRES_DB: {{ quote .Values.postgresService.postgresDb }}
   POSTGRES_HOST: {{ quote .Values.postgresService.postgresqlHost }}

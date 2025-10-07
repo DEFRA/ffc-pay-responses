@@ -4,12 +4,6 @@ const { RESPONSE_REJECTED } = require('../constants/events')
 const { SOURCE } = require('../constants/source')
 
 const sendResponsesQuarantineEvent = async (filename, error) => {
-  if (config.useV2Events) {
-    await sendV2ResponsesQuarantineEvent(filename, error)
-  }
-}
-
-const sendV2ResponsesQuarantineEvent = async (filename, error) => {
   const event = {
     source: SOURCE,
     type: RESPONSE_REJECTED,
