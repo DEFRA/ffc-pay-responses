@@ -41,7 +41,6 @@ container:
   archiveFolder: archive
   quarantineFolder: quarantine
   returnFolder: return
-  useV2Events: true
   useV2ReturnFiles: true
   processingActive: true
   port: 3012

@@ -1,6 +1,6 @@
 {
   "name": "ffc-pay-responses",
-  "version": "1.10.21",
+  "version": "1.10.23",
   "description": "FFC payment response processing",
   "homepage": "https://github.com/DEFRA/ffc-pay-responses",
   "main": "app/index.js",
@@ -19,9 +19,9 @@
     "Steve Dickinson steve.dickinson@defra.gov.uk",
     "Marc Templeton m.templeton@kainos.com",
     "Kirsten Williamson kirsten.williamson@kainos.com",
-    "Sam Plackett samuel.plackett@eviden.com",
-    "John Barnard john.barnard.external@eviden.com",
-    "Leigh Godson leigh.godson.external@eviden.com"
+    "Sam Plackett samuel.plackett@atos.net",
+    "John Barnard john.barnard.external@atos.net",
+    "Leigh Godson leigh.godson@atos.net"
   ],
   "license": "OGL-UK-3.0",
   "dependencies": {
@@ -32,7 +32,7 @@
     "ffc-database": "1.0.23",
     "ffc-messaging": "2.10.1",
     "ffc-pay-event-publisher": "1.2.0",
-    "hapi-pino": "12.1.0",
+    "hapi-pino": "13.0.0",
     "log-timestamp": "0.3.0",
     "moment": "2.29.4",
     "pg": "8.11.3",
