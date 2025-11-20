@@ -13,11 +13,17 @@ jest.mock('../../../../../app/processing/returns/imps/set-imps-acknowledgements-
 jest.mock('../../../../../app/processing/returns/sequence/update-sequence', () => ({ updateSequence: jest.fn() }))
 
 const { createImpsReturnFile } = require('../../../../../app/processing/returns/imps/create-imps-return-file')
-const {
-  convertToPounds, getAndIncrementSequence, getImpsAcknowledgementLines, getImpsPendingReturns,
-  getImpsPendingReturnLines, allImpsAcknowledgementsReceived, getImpsPendingAcknowledgements,
-  setImpsAcknowledgementsExported, updateSequence, publishReturnFile
-} = require('../../../../../app/processing/returns/imps/create-imps-return-file')
+
+const { convertToPounds } = require('../../../../../app/currency-convert')
+const { getAndIncrementSequence } = require('../../../../../app/processing/returns/sequence/get-and-increment-sequence')
+const { getImpsAcknowledgementLines } = require('../../../../../app/processing/returns/imps/get-imps-acknowledgement-lines')
+const { getImpsPendingReturns } = require('../../../../../app/processing/returns/imps/get-imps-pending-returns')
+const { getImpsPendingReturnLines } = require('../../../../../app/processing/returns/imps/get-imps-pending-return-lines')
+const { allImpsAcknowledgementsReceived } = require('../../../../../app/processing/returns/imps/all-imps-acknowledgements-received')
+const { getImpsPendingAcknowledgements } = require('../../../../../app/processing/returns/imps/get-imps-pending-acknowledgements')
+const { setImpsAcknowledgementsExported } = require('../../../../../app/processing/returns/imps/set-imps-acknowledgements-exported')
+const { updateSequence } = require('../../../../../app/processing/returns/sequence/update-sequence')
+const { publishReturnFile } = require('../../../../../app/processing/returns/publish-return-file')
 
 describe('createImpsReturnFile', () => {
   const acknowledgements = [
@@ -45,16 +51,17 @@ describe('createImpsReturnFile', () => {
 
   test('creates return file with proper content', async () => {
     await createImpsReturnFile(acknowledgements, transaction)
-    const expectedHeader = `B,04,${sequenceString},${acknowledgements.length},${convertToPounds(totalValue)},S`
+    const totalLines = acknowledgementLines.length + pendingReturnLines.length
+    const expectedHeader = `B,04,${sequenceString},${totalLines},${convertToPounds(totalValue)},S`
     const expectedContent = `${expectedHeader}\r\n${acknowledgementLines.join('\r\n')}\r\n${pendingReturnLines.join('\r\n')}`
 
     expect(getAndIncrementSequence).toHaveBeenCalledWith(IMPS, transaction)
     expect(getImpsAcknowledgementLines).toHaveBeenCalledWith(acknowledgements, sequence, transaction)
     expect(publishReturnFile).toHaveBeenCalledWith(
-      `RET_IMPS_AP_${sequenceString}.INT`,
-      expectedContent,
-      `CTL_RET_IMPS_AP_${sequenceString}.INT`,
-      null
+    `RET_IMPS_AP_${sequenceString}.INT`,
+    expectedContent,
+    `CTL_RET_IMPS_AP_${sequenceString}.INT`,
+    null
     )
   })
 

@@ -27,7 +27,14 @@ describe('get IMPS pending return lines', () => {
   ])('returns correct lines and total for acknowledged batches %p', async (ackBatches, expectedLines, expectedTotal) => {
     acknowledgedBatchNumbers.push(...ackBatches)
     const result = await getImpsPendingReturnLines(pendingReturns, acknowledgedBatchNumbers)
+    const shouldUpdate = expectedLines.length > 0
+
+    if (shouldUpdate) {
+      expect(pendingReturns[0].update).toHaveBeenCalled()
+    } else {
+      expect(pendingReturns[0].update).not.toHaveBeenCalled()
+    }
+
     expect(result).toEqual({ pendingReturnLines: expectedLines, totalValue: expectedTotal })
-    expect(pendingReturns[0].update).toHaveBeenCalled()
   })
 })

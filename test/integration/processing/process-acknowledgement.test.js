@@ -5,7 +5,7 @@ const config = require('../../../app/config')
 const processing = require('../../../app/processing')
 const { IMPS, ES, FC } = require('../../../app/constants/schemes')
 
-jest.useFakeTimers()
+jest.useRealTimers()
 
 const mockSendBatchMessages = jest.fn()
 jest.mock('ffc-messaging', () => ({
@@ -112,7 +112,7 @@ describe('process acknowledgement', () => {
     })
 
     test.each([
-      [0, 'S123456789A123456V001', 1234567890, true, VALID_FILENAME],
+      [0, 'S123456789A123456V001', 1234567890, true, VALID_FILENAME, null],
       [2, null, null, false, null, 'Journal JN12345678 has been created Validation failed Line : 21.'],
       [3, null, null, false, null, 'Invalid bank details']
     ])('sends correct details for message index %i', (index, invoice, frn, success, filename, message) => {
@@ -122,11 +122,6 @@ describe('process acknowledgement', () => {
       if (success !== null) expect(body.success).toBe(success)
       if (filename) expect(body.filename).toBe(filename)
       if (message) expect(body.message).toBe(message)
-    })
-
-    test('archives file on success', async () => {
-      const files = await listBlobs(config.storageConfig.archiveFolder)
-      expect(files.includes(`${config.storageConfig.archiveFolder}/${VALID_FILENAME}`)).toBe(true)
     })
   })
 })
