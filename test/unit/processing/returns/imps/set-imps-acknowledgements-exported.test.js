@@ -8,11 +8,10 @@ describe('set IMPS acknowledgements exported', () => {
 
   beforeEach(async () => {
     transaction = await db.sequelize.transaction()
-
     await db.impsAcknowledgement.bulkCreate([
-      { impsAcknowledgementId: 1, batchNumber: '1', invoiceNumber: 'S123456789A123456V001', frn: 1234567890, exported: null },
-      { impsAcknowledgementId: 2, batchNumber: '1', invoiceNumber: 'S123456789B123456V001', frn: 1234567891, exported: null },
-      { impsAcknowledgementId: 3, batchNumber: '2', invoiceNumber: 'S123456789C123456V001', frn: 1234567892, exported: null }
+      { impsAcknowledgementId: 1, batchNumber: '1', invoiceNumber: 'S123456789A123456V001', frn: 1234567890 },
+      { impsAcknowledgementId: 2, batchNumber: '1', invoiceNumber: 'S123456789B123456V001', frn: 1234567891 },
+      { impsAcknowledgementId: 3, batchNumber: '2', invoiceNumber: 'S123456789C123456V001', frn: 1234567892 }
     ], { transaction })
   })
 
@@ -22,30 +21,14 @@ describe('set IMPS acknowledgements exported', () => {
     await db.impsAcknowledgement.destroy({ where: {}, truncate: true })
   })
 
-  test('sets exported date for given acknowledgements', async () => {
-    const acknowledgements = [
-      { impsAcknowledgementId: 1 },
-      { impsAcknowledgementId: 2 }
-    ]
-
+  test('sets exported date only for specified acknowledgements', async () => {
+    const acknowledgements = [{ impsAcknowledgementId: 1 }, { impsAcknowledgementId: 2 }]
     await setImpsAcknowledgementsExported(acknowledgements, transaction)
 
-    const updatedAcknowledgements = await db.impsAcknowledgement.findAll({ where: { impsAcknowledgementId: [1, 2] }, transaction })
-    expect(updatedAcknowledgements.length).toBe(2)
-    updatedAcknowledgements.forEach(ack => {
-      expect(ack.exported).not.toBeNull()
-    })
-  })
+    const updated = await db.impsAcknowledgement.findAll({ where: { impsAcknowledgementId: [1, 2] }, transaction })
+    expect(updated.every(ack => ack.exported)).toBe(true)
 
-  test('does not set exported date for acknowledgements not in the list', async () => {
-    const acknowledgements = [
-      { impsAcknowledgementId: 1 },
-      { impsAcknowledgementId: 2 }
-    ]
-
-    await setImpsAcknowledgementsExported(acknowledgements, transaction)
-
-    const notUpdatedAcknowledgement = await db.impsAcknowledgement.findOne({ where: { impsAcknowledgementId: 3 }, transaction })
-    expect(notUpdatedAcknowledgement.exported).toBeNull()
+    const notUpdated = await db.impsAcknowledgement.findOne({ where: { impsAcknowledgementId: 3 }, transaction })
+    expect(notUpdated.exported).toBeNull()
   })
 })

@@ -10,188 +10,29 @@ const filename = require('../../mocks/filenames').TEST
 const error = require('../../mocks/error')
 
 describe('quarantine file', () => {
-  afterEach(async () => {
+  afterEach(() => {
     jest.resetAllMocks()
   })
 
-  test('should call blobStorage.quarantineFile when a filename is received', async () => {
-    await quarantineFile(filename, error)
-    expect(blobStorage.quarantineFile).toHaveBeenCalled()
-  })
+  const inputs = [
+    ['filename', filename],
+    ['empty string', ''],
+    ['object', {}],
+    ['array', []],
+    ['undefined', undefined],
+    ['null', null]
+  ]
 
-  test('should call blobStorage.quarantineFile once when a filename is received', async () => {
-    await quarantineFile(filename, error)
+  test.each(inputs)('should call blobStorage.quarantineFile with %s', async (_, input) => {
+    await quarantineFile(input, error)
     expect(blobStorage.quarantineFile).toHaveBeenCalledTimes(1)
+    expect(blobStorage.quarantineFile).toHaveBeenCalledWith(input)
   })
 
-  test('should call blobStorage.quarantineFile with filename when a filename is received', async () => {
-    await quarantineFile(filename, error)
-    expect(blobStorage.quarantineFile).toHaveBeenCalledWith(filename)
-  })
-
-  test('should call blobStorage.quarantineFile when an empty string is received', async () => {
-    await quarantineFile('', error)
-    expect(blobStorage.quarantineFile).toHaveBeenCalled()
-  })
-
-  test('should call blobStorage.quarantineFile once when an empty string is received', async () => {
-    await quarantineFile('', error)
-    expect(blobStorage.quarantineFile).toHaveBeenCalledTimes(1)
-  })
-
-  test('should call blobStorage.quarantineFile with empty string when an empty string is received', async () => {
-    await quarantineFile('', error)
-    expect(blobStorage.quarantineFile).toHaveBeenCalledWith('')
-  })
-
-  test('should call blobStorage.quarantineFile when an object is received', async () => {
-    await quarantineFile({}, error)
-    expect(blobStorage.quarantineFile).toHaveBeenCalled()
-  })
-
-  test('should call blobStorage.quarantineFile once when an object is received', async () => {
-    await quarantineFile({}, error)
-    expect(blobStorage.quarantineFile).toHaveBeenCalledTimes(1)
-  })
-
-  test('should call blobStorage.quarantineFile with object when an object is received', async () => {
-    await quarantineFile({}, error)
-    expect(blobStorage.quarantineFile).toHaveBeenCalledWith({})
-  })
-
-  test('should call blobStorage.quarantineFile when an array is received', async () => {
-    await quarantineFile([])
-    expect(blobStorage.quarantineFile).toHaveBeenCalled()
-  })
-
-  test('should call blobStorage.quarantineFile once when an array is received', async () => {
-    await quarantineFile([], error)
-    expect(blobStorage.quarantineFile).toHaveBeenCalledTimes(1)
-  })
-
-  test('should call blobStorage.quarantineFile with array when an array is received', async () => {
-    await quarantineFile([], error)
-    expect(blobStorage.quarantineFile).toHaveBeenCalledWith([])
-  })
-
-  test('should call blobStorage.quarantineFile when undefined is received', async () => {
-    await quarantineFile(undefined, error)
-    expect(blobStorage.quarantineFile).toHaveBeenCalled()
-  })
-
-  test('should call blobStorage.quarantineFile once when undefined is received', async () => {
-    await quarantineFile(undefined, error)
-    expect(blobStorage.quarantineFile).toHaveBeenCalledTimes(1)
-  })
-
-  test('should call blobStorage.quarantineFile with undefined when undefined is received', async () => {
-    await quarantineFile(undefined, error)
-    expect(blobStorage.quarantineFile).toHaveBeenCalledWith(undefined)
-  })
-
-  test('should call blobStorage.quarantineFile when null is received', async () => {
-    await quarantineFile(null, error)
-    expect(blobStorage.quarantineFile).toHaveBeenCalled()
-  })
-
-  test('should call blobStorage.quarantineFile once when null is received', async () => {
-    await quarantineFile(null, error)
-    expect(blobStorage.quarantineFile).toHaveBeenCalledTimes(1)
-  })
-
-  test('should call blobStorage.quarantineFile with null when null is received', async () => {
-    await quarantineFile(null, error)
-    expect(blobStorage.quarantineFile).toHaveBeenCalledWith(null)
-  })
-
-  test('should call sendResponsesQuarantineEvent when a filename is received', async () => {
-    await quarantineFile(filename, error)
-    expect(sendResponsesQuarantineEvent).toHaveBeenCalled()
-  })
-
-  test('should call sendResponsesQuarantineEvent once when a filename is received', async () => {
-    await quarantineFile(filename, error)
+  test.each(inputs)('should call sendResponsesQuarantineEvent with %s', async (_, input) => {
+    await quarantineFile(input, error)
     expect(sendResponsesQuarantineEvent).toHaveBeenCalledTimes(1)
-  })
-
-  test('should call sendResponsesQuarantineEvent with filename and error when a filename is received', async () => {
-    await quarantineFile(filename, error)
-    expect(sendResponsesQuarantineEvent).toHaveBeenCalledWith(filename, error)
-  })
-
-  test('should call sendResponsesQuarantineEvent when an empty string is received', async () => {
-    await quarantineFile('', error)
-    expect(sendResponsesQuarantineEvent).toHaveBeenCalled()
-  })
-
-  test('should call sendResponsesQuarantineEvent once when an empty string is received', async () => {
-    await quarantineFile('', error)
-    expect(sendResponsesQuarantineEvent).toHaveBeenCalledTimes(1)
-  })
-
-  test('should call sendResponsesQuarantineEvent with empty string and error when an empty string is received', async () => {
-    await quarantineFile('', error)
-    expect(sendResponsesQuarantineEvent).toHaveBeenCalledWith('', error)
-  })
-
-  test('should call sendResponsesQuarantineEvent when an object is received', async () => {
-    await quarantineFile({}, error)
-    expect(sendResponsesQuarantineEvent).toHaveBeenCalled()
-  })
-
-  test('should call sendResponsesQuarantineEvent once when an object is received', async () => {
-    await quarantineFile({}, error)
-    expect(sendResponsesQuarantineEvent).toHaveBeenCalledTimes(1)
-  })
-
-  test('should call sendResponsesQuarantineEvent with object and error when an object is received', async () => {
-    await quarantineFile({}, error)
-    expect(sendResponsesQuarantineEvent).toHaveBeenCalledWith({}, error)
-  })
-
-  test('should call sendResponsesQuarantineEvent when an array is received', async () => {
-    await quarantineFile([], error)
-    expect(sendResponsesQuarantineEvent).toHaveBeenCalled()
-  })
-
-  test('should call sendResponsesQuarantineEvent once when an array is received', async () => {
-    await quarantineFile([], error)
-    expect(sendResponsesQuarantineEvent).toHaveBeenCalledTimes(1)
-  })
-
-  test('should call sendResponsesQuarantineEvent with array and error when an array is received', async () => {
-    await quarantineFile([], error)
-    expect(sendResponsesQuarantineEvent).toHaveBeenCalledWith([], error)
-  })
-
-  test('should call sendResponsesQuarantineEvent when undefined is received', async () => {
-    await quarantineFile(undefined, error)
-    expect(sendResponsesQuarantineEvent).toHaveBeenCalled()
-  })
-
-  test('should call sendResponsesQuarantineEvent once when undefined is received', async () => {
-    await quarantineFile(undefined, error)
-    expect(sendResponsesQuarantineEvent).toHaveBeenCalledTimes(1)
-  })
-
-  test('should call sendResponsesQuarantineEvent with undefined and error when undefined is received', async () => {
-    await quarantineFile(undefined, error)
-    expect(sendResponsesQuarantineEvent).toHaveBeenCalledWith(undefined, error)
-  })
-
-  test('should call sendResponsesQuarantineEvent when null is received', async () => {
-    await quarantineFile(null, error)
-    expect(sendResponsesQuarantineEvent).toHaveBeenCalled()
-  })
-
-  test('should call sendResponsesQuarantineEvent once when null is received', async () => {
-    await quarantineFile(null, error)
-    expect(sendResponsesQuarantineEvent).toHaveBeenCalledTimes(1)
-  })
-
-  test('should call sendResponsesQuarantineEvent with null and error when null is received', async () => {
-    await quarantineFile(null, error)
-    expect(sendResponsesQuarantineEvent).toHaveBeenCalledWith(null, error)
+    expect(sendResponsesQuarantineEvent).toHaveBeenCalledWith(input, error)
   })
 
   test('should return true when blobStorage.quarantineFile returns true', async () => {

@@ -2,17 +2,10 @@ const config = require('../../../../../app/config')
 const db = require('../../../../../app/data')
 const { getImpsAcknowledgementLines } = require('../../../../../app/processing/returns/imps/get-imps-acknowledgement-lines')
 
-const acknowledgements = [{
-  invoiceNumber: 'INV001',
-  frn: 1234567890,
-  success: true,
-  batchNumber: '1'
-}, {
-  invoiceNumber: 'INV002',
-  frn: 9876543210,
-  success: true,
-  batchNumber: '6'
-}]
+const acknowledgements = [
+  { invoiceNumber: 'INV001', frn: 1234567890, success: true, batchNumber: '1' },
+  { invoiceNumber: 'INV002', frn: 9876543210, success: true, batchNumber: '6' }
+]
 
 const mockBatchNumber = {
   impsBatchNumberId: 1,
@@ -26,9 +19,12 @@ const mockBatchNumber = {
 describe('get IMPS acknowledgement lines', () => {
   let transaction
 
+  beforeAll(async () => {
+    await db.sequelize.sync({ force: true })
+  })
+
   beforeEach(async () => {
     jest.clearAllMocks()
-    await db.sequelize.sync({ force: true })
     transaction = await db.sequelize.transaction()
     await db.impsBatchNumber.bulkCreate([mockBatchNumber], { transaction })
   })
@@ -41,35 +37,22 @@ describe('get IMPS acknowledgement lines', () => {
     await db.sequelize.close()
   })
 
-  test('should return correct acknowledgement lines (H for header, trader number, batch number, invoice number, I if success) based on acknowledged data', async () => {
-    config.useV2ReturnFiles = false
-    const expectedLines = ['H,1,04,Trader1,INV001,I,,,,,,']
-    const result = await getImpsAcknowledgementLines(acknowledgements, 1, transaction)
+  test.each([
+    ['successful acknowledgement', false, ['H,1,04,Trader1,INV001,I,,,,,,']],
+    ['unsuccessful acknowledgement', false, ['H,1,04,Trader1,INV001,R,,,,,,']],
+    ['filter by sequence when useV2ReturnFiles true', true, ['H,1,04,Trader1,INV001,false,,,,,,']]
+  ])('should return correct acknowledgement lines for %s', async (_, useV2, expectedLines) => {
+    if (_ === 'unsuccessful acknowledgement') acknowledgements[0].success = false
+    config.useV2ReturnFiles = useV2
+    const sequence = useV2 ? 5 : 1
+
+    const result = await getImpsAcknowledgementLines(acknowledgements, sequence, transaction)
+
     expect(result.acknowledgementLines).toEqual(expectedLines)
   })
 
-  test('should return R in acknowledgement lines if acknowledgement not successful', async () => {
-    acknowledgements[0].success = false
-    config.useV2ReturnFiles = false
-    const expectedLines = ['H,1,04,Trader1,INV001,R,,,,,,']
+  test('should return correct list of batch numbers based on acknowledged data', async () => {
     const result = await getImpsAcknowledgementLines(acknowledgements, 1, transaction)
-    expect(result.acknowledgementLines).toEqual(expectedLines)
-  })
-
-  test('should return correct list of batch numbers based on the acknowledged data', async () => {
-    const expectedBatchNumbers = ['1']
-    const result = await getImpsAcknowledgementLines(acknowledgements, 1, transaction)
-    expect(result.batchNumbers).toEqual(expectedBatchNumbers)
-  })
-
-  test('should filter acknowledgements based on sequence when useV2ReturnFiles is true', async () => {
-    config.useV2ReturnFiles = true
-
-    const result = await getImpsAcknowledgementLines(acknowledgements, 5, transaction)
-
-    const expectedLines = ['H,1,04,Trader1,INV001,false,,,,,,']
-    const expectedBatchNumbers = ['1']
-    expect(result.acknowledgementLines).toEqual(expectedLines)
-    expect(result.batchNumbers).toEqual(expectedBatchNumbers)
+    expect(result.batchNumbers).toEqual(['1'])
   })
 })

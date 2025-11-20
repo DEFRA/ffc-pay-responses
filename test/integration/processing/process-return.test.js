@@ -1,37 +1,26 @@
 jest.useFakeTimers()
 
 const mockSendBatchMessages = jest.fn()
-
-jest.mock('ffc-messaging', () => {
-  return {
-    MessageBatchSender: jest.fn().mockImplementation(() => {
-      return {
-        sendBatchMessages: mockSendBatchMessages,
-        closeConnection: jest.fn()
-      }
-    })
-  }
-})
-
 const mockPublishEvent = jest.fn()
 
-jest.mock('ffc-pay-event-publisher', () => {
-  return {
-    EventPublisher: jest.fn().mockImplementation(() => {
-      return {
-        publishEvent: mockPublishEvent
-      }
-    })
-  }
-})
+jest.mock('ffc-messaging', () => ({
+  MessageBatchSender: jest.fn().mockImplementation(() => ({
+    sendBatchMessages: mockSendBatchMessages,
+    closeConnection: jest.fn()
+  }))
+}))
 
-const { BlobServiceClient } = require('@azure/storage-blob')
+jest.mock('ffc-pay-event-publisher', () => ({
+  EventPublisher: jest.fn().mockImplementation(() => ({
+    publishEvent: mockPublishEvent
+  }))
+}))
+
 const path = require('path')
-
+const { BlobServiceClient } = require('@azure/storage-blob')
 const config = require('../../../app/config')
 const db = require('../../../app/data')
 const processing = require('../../../app/processing')
-
 const { RESPONSE_REJECTED } = require('../../../app/constants/events')
 const { SOURCE } = require('../../../app/constants/source')
 
@@ -53,6 +42,29 @@ const GLOS_TEST_FILE = path.resolve(__dirname, '../../files/glos-return-file.dat
 let blobServiceClient
 let container
 
+const uploadFile = async (filename, filePath) => {
+  const blob = container.getBlockBlobClient(`${config.storageConfig.inboundFolder}/${filename}`)
+  await blob.uploadFile(filePath)
+}
+
+const listBlobs = async (prefix = '') => {
+  const items = []
+  for await (const blob of container.listBlobsFlat({ prefix })) {
+    items.push(blob.name)
+  }
+  return items
+}
+
+const assertArchived = async (filename) => {
+  const archived = await listBlobs(config.storageConfig.archiveFolder)
+  expect(archived).toContain(`${config.storageConfig.archiveFolder}/${filename}`)
+}
+
+const assertQuarantined = async (filename) => {
+  const quarantined = await listBlobs(config.storageConfig.quarantineFolder)
+  expect(quarantined).toContain(`${config.storageConfig.quarantineFolder}/${filename}`)
+}
+
 describe('process return', () => {
   beforeEach(async () => {
     jest.clearAllMocks()
@@ -62,187 +74,73 @@ describe('process return', () => {
     container = blobServiceClient.getContainerClient(config.storageConfig.container)
     await container.deleteIfExists()
     await container.createIfNotExists()
-    const blockBlobClient = container.getBlockBlobClient(`${config.storageConfig.inboundFolder}/${VALID_FILENAME}`)
-    await blockBlobClient.uploadFile(TEST_FILE)
+    await uploadFile(VALID_FILENAME, TEST_FILE)
   })
 
-  test('sends all returns', async () => {
+  test('sends all returns and correct invoice/settled info', async () => {
     await processing.start()
-    expect(mockSendBatchMessages.mock.calls[0][0].length).toBe(6)
+    const calls = mockSendBatchMessages.mock.calls[0][0]
+    expect(calls.length).toBe(6)
+    expect(calls[0].body.invoiceNumber).toBe('S123456789A123456V001')
+    expect(calls[0].body.settled).toBe(true)
+    expect(calls[4].body.settled).toBe(true)
+    expect(calls[5].body.settled).toBe(false)
+    expect(calls[0].body.filename).toBe(VALID_FILENAME)
   })
 
-  test('sends invoice number if file valid', async () => {
+  test('archives valid file on success', async () => {
     await processing.start()
-    expect(mockSendBatchMessages.mock.calls[0][0][0].body.invoiceNumber).toBe('S123456789A123456V001')
+    await assertArchived(VALID_FILENAME)
   })
 
-  test('sends settled if D if file valid', async () => {
-    await processing.start()
-    expect(mockSendBatchMessages.mock.calls[0][0][0].body.settled).toBe(true)
-  })
-
-  test('sends settled if E with reference if file valid', async () => {
-    await processing.start()
-    expect(mockSendBatchMessages.mock.calls[0][0][4].body.settled).toBe(true)
-  })
-
-  test('sends unsettled if E without reference if file valid', async () => {
-    await processing.start()
-    expect(mockSendBatchMessages.mock.calls[0][0][5].body.settled).toBe(false)
-  })
-
-  test('sends filename if file valid', async () => {
-    await processing.start()
-    expect(mockSendBatchMessages.mock.calls[0][0][0].body.filename).toBe(VALID_FILENAME)
-  })
-
-  test('archives file on success', async () => {
-    await processing.start()
-    const fileList = []
-    for await (const item of container.listBlobsFlat({ prefix: config.storageConfig.archiveFolder })) {
-      fileList.push(item.name)
-    }
-    expect(fileList.filter(x => x === `${config.storageConfig.archiveFolder}/${VALID_FILENAME}`).length).toBe(1)
-  })
-
-  test('does not quarantine file if unable to publish message', async () => {
+  test('does not quarantine if unable to publish message', async () => {
     mockSendBatchMessages.mockImplementation(() => { throw new Error('Unable to publish message') })
     await processing.start()
-    const fileList = []
-    for await (const item of container.listBlobsFlat()) {
-      fileList.push(item.name)
-    }
-    expect(fileList.filter(x => x === `${config.storageConfig.inboundFolder}/${VALID_FILENAME}`).length).toBe(1)
+    const inbound = await listBlobs(config.storageConfig.inboundFolder)
+    expect(inbound).toContain(`${config.storageConfig.inboundFolder}/${VALID_FILENAME}`)
   })
 
   test('ignores unrelated file', async () => {
-    const blockBlobClient = container.getBlockBlobClient(`${config.storageConfig.inboundFolder}/${INVALID_FILENAME}`)
-    await blockBlobClient.uploadFile(TEST_FILE)
+    await uploadFile(INVALID_FILENAME, TEST_FILE)
     await processing.start()
-    const fileList = []
-    for await (const item of container.listBlobsFlat({ prefix: config.storageConfig.inboundFolder })) {
-      fileList.push(item.name)
-    }
-    expect(fileList.filter(x => x === `${config.storageConfig.inboundFolder}/${INVALID_FILENAME}`).length).toBe(1)
+    const inbound = await listBlobs(config.storageConfig.inboundFolder)
+    expect(inbound).toContain(`${config.storageConfig.inboundFolder}/${INVALID_FILENAME}`)
   })
 
   test('quarantines invalid file', async () => {
-    const blockBlobClient = container.getBlockBlobClient(`${config.storageConfig.inboundFolder}/${VALID_FILENAME}`)
-    await blockBlobClient.uploadFile(TEST_INVALID_FILE)
+    await uploadFile(VALID_FILENAME, TEST_INVALID_FILE)
     await processing.start()
-    const fileList = []
-    for await (const item of container.listBlobsFlat({ prefix: config.storageConfig.quarantineFolder })) {
-      fileList.push(item.name)
-    }
-    expect(fileList.filter(x => x === `${config.storageConfig.quarantineFolder}/${VALID_FILENAME}`).length).toBe(1)
+    await assertQuarantined(VALID_FILENAME)
   })
 
-  test('calls mockPublishEvent once', async () => {
-    const blockBlobClient = container.getBlockBlobClient(`${config.storageConfig.inboundFolder}/${VALID_FILENAME}`)
-    await blockBlobClient.uploadFile(TEST_INVALID_FILE)
-
+  test('publishes RESPONSE_REJECTED event for invalid file', async () => {
+    await uploadFile(VALID_FILENAME, TEST_INVALID_FILE)
     await processing.start()
-
-    expect(mockPublishEvent.mock.calls.length).toBe(1)
+    expect(mockPublishEvent).toHaveBeenCalledTimes(1)
+    const event = mockPublishEvent.mock.calls[0][0]
+    expect(event.type).toBe(RESPONSE_REJECTED)
+    expect(event.source).toBe(SOURCE)
+    expect(event.subject).toBe(VALID_FILENAME)
   })
 
-  test('calls mockPublishEvent with event.type RESPONSE_REJECTED', async () => {
-    const blockBlobClient = container.getBlockBlobClient(`${config.storageConfig.inboundFolder}/${VALID_FILENAME}`)
-    await blockBlobClient.uploadFile(TEST_INVALID_FILE)
-
+  test.each([
+    [GENESIS_FILENAME, GENESIS_TEST_FILE, 'GENESISPayConf', '.gni'],
+    [GENESIS_FILENAME, GENESIS_TEST_FILE, 'GENESISPayConf', '.gni.ctl'],
+    [GLOS_FILENAME, GLOS_TEST_FILE, 'FCAP_', '.dat'],
+    [GLOS_FILENAME, GLOS_TEST_FILE, 'FCAP_', '.ctl']
+  ])('creates %s return files correctly', async (filename, filePath, prefix, suffix) => {
+    await uploadFile(filename, filePath)
     await processing.start()
-    expect(mockPublishEvent.mock.calls[0][0].type).toBe(RESPONSE_REJECTED)
+    const returns = await listBlobs(config.storageConfig.returnFolder)
+    expect(returns.some(x => x.startsWith(`${config.storageConfig.returnFolder}/${prefix}`) && x.endsWith(suffix))).toBe(true)
   })
 
-  test('calls mockPublishEvent.sendEvent with source of SOURCE', async () => {
-    const blockBlobClient = container.getBlockBlobClient(`${config.storageConfig.inboundFolder}/${VALID_FILENAME}`)
-    await blockBlobClient.uploadFile(TEST_INVALID_FILE)
-
+  test('does not create IMPS return file but saves IMPS return data', async () => {
+    await uploadFile(IMPS_FILENAME, IMPS_TEST_FILE)
     await processing.start()
+    const returns = await listBlobs(config.storageConfig.returnFolder)
+    expect(returns.filter(x => x.startsWith(`${config.storageConfig.returnFolder}/RET_IMPS`))).toHaveLength(0)
 
-    expect(mockPublishEvent.mock.calls[0][0].source).toBe(SOURCE)
-  })
-
-  test('calls mockPublishEvent.sendEvent with subject of VALID_FILENAME', async () => {
-    const blockBlobClient = container.getBlockBlobClient(`${config.storageConfig.inboundFolder}/${VALID_FILENAME}`)
-    await blockBlobClient.uploadFile(TEST_INVALID_FILE)
-
-    await processing.start()
-
-    expect(mockPublishEvent.mock.calls[0][0].subject).toBe(VALID_FILENAME)
-  })
-
-  test('creates Genesis return file if return file is Genesis', async () => {
-    const blockBlobClient = container.getBlockBlobClient(`${config.storageConfig.inboundFolder}/${GENESIS_FILENAME}`)
-    await blockBlobClient.uploadFile(GENESIS_TEST_FILE)
-    await processing.start()
-    const fileList = []
-    for await (const item of container.listBlobsFlat({ prefix: config.storageConfig.returnFolder })) {
-      fileList.push(item.name)
-    }
-    expect(fileList.filter(x =>
-      x.startsWith(`${config.storageConfig.returnFolder}/GENESISPayConf`) &&
-        x.endsWith('.gni')
-    ).length).toBe(1)
-  })
-
-  test('creates Genesis return control file if return file is Genesis', async () => {
-    const blockBlobClient = container.getBlockBlobClient(`${config.storageConfig.inboundFolder}/${GENESIS_FILENAME}`)
-    await blockBlobClient.uploadFile(GENESIS_TEST_FILE)
-    await processing.start()
-    const fileList = []
-    for await (const item of container.listBlobsFlat({ prefix: config.storageConfig.returnFolder })) {
-      fileList.push(item.name)
-    }
-    expect(fileList.filter(x =>
-      x.startsWith(`${config.storageConfig.returnFolder}/GENESISPayConf`) &&
-        x.endsWith('.gni.ctl')
-    ).length).toBe(1)
-  })
-
-  test('creates Glos return file if return file is Glos', async () => {
-    const blockBlobClient = container.getBlockBlobClient(`${config.storageConfig.inboundFolder}/${GLOS_FILENAME}`)
-    await blockBlobClient.uploadFile(GLOS_TEST_FILE)
-    await processing.start()
-    const fileList = []
-    for await (const item of container.listBlobsFlat({ prefix: config.storageConfig.returnFolder })) {
-      fileList.push(item.name)
-    }
-    expect(fileList.filter(x =>
-      x.startsWith(`${config.storageConfig.returnFolder}/FCAP_`) &&
-        x.endsWith('.dat')
-    ).length).toBe(1)
-  })
-
-  test('creates Glos return control file if return file is Glos', async () => {
-    const blockBlobClient = container.getBlockBlobClient(`${config.storageConfig.inboundFolder}/${GLOS_FILENAME}`)
-    await blockBlobClient.uploadFile(GLOS_TEST_FILE)
-    await processing.start()
-    const fileList = []
-    for await (const item of container.listBlobsFlat({ prefix: config.storageConfig.returnFolder })) {
-      fileList.push(item.name)
-    }
-    expect(fileList.filter(x =>
-      x.startsWith(`${config.storageConfig.returnFolder}/FCAP_`) &&
-        x.endsWith('.ctl')
-    ).length).toBe(1)
-  })
-
-  test('does not create Imps return file if return file is Imps', async () => {
-    const blockBlobClient = container.getBlockBlobClient(`${config.storageConfig.inboundFolder}/${IMPS_FILENAME}`)
-    await blockBlobClient.uploadFile(IMPS_TEST_FILE)
-    await processing.start()
-    const fileList = []
-    for await (const item of container.listBlobsFlat({ prefix: config.storageConfig.returnFolder })) {
-      fileList.push(item.name)
-    }
-    expect(fileList.filter(x => x.startsWith(`${config.storageConfig.returnFolder}/RET_IMPS`)).length).toBe(0)
-  })
-
-  test('saves Imps return data if return file is Imps', async () => {
-    const blockBlobClient = container.getBlockBlobClient(`${config.storageConfig.inboundFolder}/${IMPS_FILENAME}`)
-    await blockBlobClient.uploadFile(IMPS_TEST_FILE)
-    await processing.start()
     const impsReturns = await db.impsReturn.findAll()
     expect(impsReturns.length).toBe(2)
   })
