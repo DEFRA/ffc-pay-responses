@@ -117,11 +117,11 @@ describe('process acknowledgement', () => {
       [3, null, null, false, null, 'Invalid bank details']
     ])('sends correct details for message index %i', (index, invoice, frn, success, filename, message) => {
       const body = mockSendBatchMessages.mock.calls[0][0][index].body
-      if (invoice) expect(body.invoiceNumber).toBe(invoice)
-      if (frn) expect(body.frn).toBe(frn)
-      if (success !== null) expect(body.success).toBe(success)
-      if (filename) expect(body.filename).toBe(filename)
-      if (message) expect(body.message).toBe(message)
+      if (invoice) { expect(body.invoiceNumber).toBe(invoice) }
+      if (frn) { expect(body.frn).toBe(frn) }
+      if (success !== null) { expect(body.success).toBe(success) }
+      if (filename) { expect(body.filename).toBe(filename) }
+      if (message) { expect(body.message).toBe(message) }
     })
   })
 })
