@@ -45,7 +45,7 @@ describe('get IMPS acknowledgement lines', () => {
     if (_ === 'unsuccessful acknowledgement') {
       acknowledgements[0].success = false
     }
-    
+
     config.useV2ReturnFiles = useV2
     const sequence = useV2 ? 5 : 1
 

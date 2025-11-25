@@ -42,7 +42,7 @@ describe('all IMPS acknowledgements received', () => {
     if (clearBatch) {
       await db.impsBatchNumber.destroy({ where: { batchNumber: '1' }, transaction })
     }
-    
+
     const result = await allImpsAcknowledgementsReceived(acknowledgements, 1, transaction)
     expect(result).toBe(expected)
   })
