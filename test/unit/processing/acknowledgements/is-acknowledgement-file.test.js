@@ -1,57 +1,16 @@
 const { isAcknowledgementFile } = require('../../../../app/processing/acknowledgements/is-acknowledgement-file')
 
-const paymentFiles = ['FFCSFIP_0001_AP_20220329120821 (SITISFI).csv', 'FFCSFIP_0001_AR_20220329120821 (SITISFI).csv']
-const returnFile = 'FFCSITI_SFI Return File.csv'
-const acknowledgementFile = 'FFC_001_Ack.xml'
-
-let filename
-
-describe('is acknowledgement file', () => {
-  test('Should return false when filename is undefined', async () => {
-    filename = undefined
-    const result = isAcknowledgementFile(filename)
-    expect(result).toBe(false)
-  })
-
-  test('Should return false when filename is null', async () => {
-    filename = null
-    const result = isAcknowledgementFile(filename)
-    expect(result).toBe(false)
-  })
-
-  test('Should return false when filename is a number', async () => {
-    filename = 1
-    const result = isAcknowledgementFile(filename)
-    expect(result).toBe(false)
-  })
-
-  test('Should return false when filename is not a xml file', async () => {
-    filename = 'FFC_001_Ack.csv'
-    const result = isAcknowledgementFile(filename)
-    expect(result).toBe(false)
-  })
-
-  test('Should return false when filename is a return file', async () => {
-    filename = returnFile
-    const result = isAcknowledgementFile(filename)
-    expect(result).toBe(false)
-  })
-
-  test('Should return true when filename is an acknowledgement file', async () => {
-    filename = acknowledgementFile
-    const result = isAcknowledgementFile(filename)
-    expect(result).toBe(true)
-  })
-
-  test('Should return false when filename is an AP payment file', async () => {
-    filename = paymentFiles[0]
-    const result = isAcknowledgementFile(filename)
-    expect(result).toBe(false)
-  })
-
-  test('Should return false when filename is an AR payment file', async () => {
-    filename = paymentFiles[1]
-    const result = isAcknowledgementFile(filename)
-    expect(result).toBe(false)
+describe('isAcknowledgementFile', () => {
+  test.each([
+    ['undefined filename', undefined, false],
+    ['null filename', null, false],
+    ['numeric filename', 1, false],
+    ['non-xml file', 'FFC_001_Ack.csv', false],
+    ['return file', 'FFCSITI_SFI Return File.csv', false],
+    ['AP payment file', 'FFCSFIP_0001_AP_20220329120821 (SITISFI).csv', false],
+    ['AR payment file', 'FFCSFIP_0001_AR_20220329120821 (SITISFI).csv', false],
+    ['acknowledgement file', 'FFC_001_Ack.xml', true]
+  ])('%s', (_, filename, expected) => {
+    expect(isAcknowledgementFile(filename)).toBe(expected)
   })
 })

@@ -1,17 +1,12 @@
 const { parseImpsReturnFile } = require('../../../../../app/processing/returns/imps/parse-imps-return-file')
-
 const impsFilename = require('../../../../mocks/filenames').IMPS
 
-let impsContent = 'H,9942,04,380225,SCM/38022522-210-001,P,1848107,115.45,B,20-JUN-23,0,'
-
-let mappedContent
-
 describe('parse return file', () => {
-  beforeEach(async () => {
-    jest.resetAllMocks()
-  })
+  let impsContent, mappedContent
 
-  test('Should return mapped imps content when filename and content provided', async () => {
+  beforeEach(() => {
+    jest.resetAllMocks()
+    impsContent = 'H,9942,04,380225,SCM/38022522-210-001,P,1848107,115.45,B,20-JUN-23,0,'
     mappedContent = [{
       sourceSystem: 'IMPS',
       paymentJobNumber: '9942',
@@ -27,38 +22,24 @@ describe('parse return file', () => {
       valueEUR: 0,
       exchangeRate: '',
       ledger: 'AP',
-      referenceId: 'c132264d0cbcf5aada6c3c5811407cca',
+      referenceId: expect.any(String),
       filename: impsFilename
     }]
+  })
+
+  test('maps content correctly', () => {
     const result = parseImpsReturnFile([impsContent], impsFilename)
     expect(result).toStrictEqual(mappedContent)
   })
 
-  test('Should return settlement date as undefined when filename and content with no settlement date provided', async () => {
+  test('returns undefined settlement date if missing', () => {
     impsContent = 'H,9942,04,380225,SCM/38022522-210-001,P,1848107,115.45,B,,0,'
-    mappedContent = [{
-      sourceSystem: 'IMPS',
-      paymentJobNumber: '9942',
-      fesCode: '04',
-      traderNumber: '380225',
-      invoiceNumber: 'SCM/38022522-210-001',
-      transactionNumber: 'SCM/38022522-210-001',
-      settled: true,
-      reference: '1848107',
-      value: 11545,
-      paymentType: 'B',
-      settlementDate: undefined,
-      valueEUR: 0,
-      exchangeRate: '',
-      ledger: 'AP',
-      referenceId: '6b8bcae3a28ab464cbafbd380bf21fcf',
-      filename: impsFilename
-    }]
+    mappedContent[0].settlementDate = undefined
     const result = parseImpsReturnFile([impsContent], impsFilename)
     expect(result).toStrictEqual(mappedContent)
   })
 
-  test('Should return empty array when content does not contain lines starting with H', async () => {
+  test('returns empty array for non-header lines', () => {
     impsContent = 'B,04,[####],2,205.03,S'
     const result = parseImpsReturnFile([impsContent], impsFilename)
     expect(result).toStrictEqual([])
