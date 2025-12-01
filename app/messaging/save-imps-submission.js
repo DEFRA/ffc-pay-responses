@@ -1,6 +1,8 @@
 const db = require('../data')
 const { getExistingImpsSubmission } = require('./get-existing-imps-submission')
 const { getImpsBatchNumber } = require('./get-imps-batch-number')
+const sendResponsesFailureEvent = require('../events/send-responses-failure-event')
+const { REPSONSES_PROCESSING_FAILED } = require('../constants/events')
 
 const saveImpsSubmission = async (paymentRequest) => {
   const transaction = await db.sequelize.transaction()
@@ -16,6 +18,7 @@ const saveImpsSubmission = async (paymentRequest) => {
     }
   } catch (error) {
     await transaction.rollback()
+    await sendResponsesFailureEvent(paymentRequest.invoiceNumber, REPSONSES_PROCESSING_FAILED, err.message)
     throw (error)
   }
 }
