@@ -18,4 +18,6 @@ const sendResponsesFailureEvent = async (invoiceNumber, type, error) => {
   }
 }
 
-module.exports = sendResponsesFailureEvent
+module.exports = {
+  sendResponsesFailureEvent
+}
