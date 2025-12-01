@@ -10,7 +10,7 @@ describe('processSubmitMessage', () => {
   let consoleLogSpy
 
   beforeEach(() => {
-    receiver = { completeMessage: jest.fn() }
+    receiver = { completeMessage: jest.fn(), deadLetterMessage: jest.fn() }
     message = { body: { schemeId: IMPS, someData: 'test' } }
     consoleLogSpy = jest.spyOn(console, 'log').mockImplementation(() => {})
   })

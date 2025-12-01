@@ -12,7 +12,7 @@ const processSubmitMessage = async (message, receiver) => {
     await receiver.completeMessage(message)
   } catch (err) {
     console.error('Unable to process payment request:', err)
-    receiver.deadLetterMessage(message);
+    receiver.deadLetterMessage(message)
   }
 }
 

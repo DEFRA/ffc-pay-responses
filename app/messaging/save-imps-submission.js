@@ -18,7 +18,7 @@ const saveImpsSubmission = async (paymentRequest) => {
     }
   } catch (error) {
     await transaction.rollback()
-    await sendResponsesFailureEvent(paymentRequest.invoiceNumber, REPSONSES_PROCESSING_FAILED, err.message)
+    await sendResponsesFailureEvent(paymentRequest.invoiceNumber, REPSONSES_PROCESSING_FAILED, error.message)
     throw (error)
   }
 }
