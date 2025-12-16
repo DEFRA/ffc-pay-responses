@@ -1,6 +1,6 @@
 {
   "name": "ffc-pay-responses",
-  "version": "1.10.25",
+  "version": "1.10.26",
   "description": "FFC payment response processing",
   "homepage": "https://github.com/DEFRA/ffc-pay-responses",
   "main": "app/index.js",
@@ -38,6 +38,9 @@
     "moment": "2.29.4",
     "sequelize": "6.32.1",
     "xml2js": "0.6.2"
+  },
+  "overrides": {
+    "validator": "13.15.22"
   },
   "devDependencies": {
     "blipp": "4.0.2",
