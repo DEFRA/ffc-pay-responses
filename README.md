@@ -42,7 +42,7 @@ This service publishes responses as messages to Azure Service Bus topics.
 | `MESSAGE_QUEUE_SUFFIX` | Developer initials, optional, will be automatically added to topic names, e.g. `-jw` |
 | `ACKNOWLEDGEMENT_TOPIC_ADDRESS` | Azure Service Bus topic name for acknowledgement messages, e.g. `ffc-pay-acknowledgement` |
 | `RETURN_TOPIC_ADDRESS` | Azure Service Bus topic name for return messages, e.g. `ffc-pay-return` |
-| `EVENT_TOPIC_ADDRESS` | Azure Service Bus topic name for event messages, e.g. `ffc-pay-event` |
+| `EVENTS_TOPIC_ADDRESS` | Azure Service Bus topic name for event messages, e.g. `ffc-pay-events` |
 
 ##### Message schemas
 

@@ -7,6 +7,10 @@ services:
       target: development
     image: ffc-pay-responses-development
     container_name: ffc-pay-responses-test
+    depends_on:
+      - ffc-pay-responses-postgres
+      - ffc-pay-responses-azurite
+      - servicebus-emulator
     command: npm run test
     volumes:
       - ./app:/home/node/app
@@ -17,10 +21,49 @@ services:
     environment:
       AZURE_STORAGE_CONNECTION_STRING: DefaultEndpointsProtocol=http;AccountName=devstoreaccount1;AccountKey=Eby8vdM02xNOcqFlqUwJPLlmEtlCDXJ1OUzFT50uSRZ6IFsuFq2UVErCz4I6tq/K1SZFPTOtr/KBHBeksoGMGw==;BlobEndpoint=http://ffc-pay-responses-azurite:10000/devstoreaccount1;
       PROCESSING_ACTIVE: true
+      MESSAGE_QUEUE_HOST: servicebus-emulator
+      MESSAGE_QUEUE_USER: RootManageSharedAccessKey
+      MESSAGE_QUEUE_PASSWORD: SAS_KEY_VALUE
+      ACKNOWLEDGEMENT_TOPIC_ADDRESS: ffc-pay-acknowledgment-test
+      RETURN_TOPIC_ADDRESS: ffc-pay-return-test
+      EVENTS_TOPIC_ADDRESS: ffc-pay-events-test
+      PAYMENTSUBMIT_TOPIC_ADDRESS: ffc-pay-submit-test
+      PAYMENTSUBMIT_SUBSCRIPTION_ADDRESS: ffc-pay-submission
       
   ffc-pay-responses-postgres:
     volumes:
       - postgres_data:/var/lib/postgresql/data
+
+  ffc-pay-responses-azurite:
+    labels:
+      com.docker.compose.pay.role: test
+  sqledge:
+    container_name: "sqledge"
+    image: "mcr.microsoft.com/azure-sql-edge:latest"
+    environment:
+      ACCEPT_EULA: "Y"
+      MSSQL_SA_PASSWORD: "DummyStrongPa$$w0rd" # To be filled by user as per policy : https://learn.microsoft.com/en-us/sql/relational-databases/security/strong-passwords?view=sql-server-linux-ver16
+
+  servicebus-emulator:
+    container_name: "servicebus-emulator"
+    image: mcr.microsoft.com/azure-messaging/servicebus-emulator:latest
+    pull_policy: always
+    volumes:
+      - "./BusConfig.json:/ServiceBus_Emulator/ConfigFiles/Config.json"
+    ports:
+      - "5672:5672"
+    environment:
+      SQL_SERVER: sqledge
+      MSSQL_SA_PASSWORD: "DummyStrongPa$$w0rd" # Password should be same as what is set for SQL Edge
+      ACCEPT_EULA: "Y"
+    depends_on:
+      - sqledge
+
+    healthcheck:
+      test: ["CMD-SHELL", "nc -z localhost 5672"]
+      interval: 5s
+      timeout: 3s
+      retries: 30
 
 volumes:
   postgres_data:

@@ -28,7 +28,6 @@ describe('process acknowledgement', () => {
     parseAcknowledgementFile.mockResolvedValue(messages)
     isImpsAcknowledgementFile.mockReturnValue(false)
     saveImpsAcknowledgements.mockResolvedValue(true)
-    config.useV2ReturnFiles = true
   })
 
   test('downloads and parses file, sends messages, archives file', async () => {
@@ -65,18 +64,17 @@ describe('process acknowledgement', () => {
   )
 
   test.each([
-    [true, true],
-    [true, false],
-    [false, true],
-    [false, false]
+    [true],
+    [true],
+    [false],
+    [false]
   ])(
-    'saveImpsAcknowledgements called if IMPS and useV2ReturnFiles: isIMPS=%s, useV2=%s',
-    async (isIMPS, useV2) => {
+    'saveImpsAcknowledgements called if IMPS: isIMPS=%s',
+    async (isIMPS) => {
       isImpsAcknowledgementFile.mockReturnValue(isIMPS)
-      config.useV2ReturnFiles = useV2
       await processAcknowledgement(filename, transaction)
 
-      if (isIMPS && useV2) {
+      if (isIMPS) {
         expect(saveImpsAcknowledgements).toHaveBeenCalledWith(messages, transaction)
       } else expect(saveImpsAcknowledgements).not.toHaveBeenCalled()
     }

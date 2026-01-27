@@ -39,7 +39,6 @@ describe('createImpsReturnFile', () => {
 
   beforeEach(() => {
     jest.clearAllMocks()
-    config.useV2ReturnFiles = true
     convertToPounds.mockReturnValue(totalValue)
     getAndIncrementSequence.mockResolvedValue({ sequence, sequenceString })
     getImpsAcknowledgementLines.mockResolvedValue({ acknowledgementLines, batchNumbers: [] })
@@ -76,14 +75,8 @@ describe('createImpsReturnFile', () => {
       expect(updateSequence).toHaveBeenCalledWith({ schemeId: IMPS, nextReturn: sequence }, transaction)
       expect(publishReturnFile).not.toHaveBeenCalled()
     } else {
-      expect(setImpsAcknowledgementsExported).toHaveBeenCalledTimes(config.useV2ReturnFiles ? 1 : 0)
+      expect(setImpsAcknowledgementsExported).toHaveBeenCalledTimes(1)
       expect(getImpsPendingAcknowledgements).toHaveBeenCalledWith(sequence, transaction)
     }
-  })
-
-  test('does not call setImpsAcknowledgementsExported if useV2ReturnFiles is false', async () => {
-    config.useV2ReturnFiles = false
-    await createImpsReturnFile(acknowledgements, transaction)
-    expect(setImpsAcknowledgementsExported).not.toHaveBeenCalled()
   })
 })

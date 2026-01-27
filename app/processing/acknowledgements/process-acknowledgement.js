@@ -6,7 +6,6 @@ const { isImpsAcknowledgementFile } = require('./is-imps-acknowledgement-file')
 const { parseAcknowledgementFile } = require('./parse-acknowledgement-file')
 const { quarantineFile } = require('../quarantine-file')
 const { saveImpsAcknowledgements } = require('./save-imps-acknowledgements')
-const config = require('../../config')
 
 const processAcknowledgement = async (filename, transaction) => {
   console.info(`Processing acknowledgement: ${filename}`)
@@ -20,9 +19,7 @@ const processAcknowledgement = async (filename, transaction) => {
   if (messages?.length) {
     await sendAcknowledgementMessages(messages)
     if (isImpsAcknowledgementFile(filename)) {
-      if (config.useV2ReturnFiles) {
-        await saveImpsAcknowledgements(messages, transaction)
-      }
+      await saveImpsAcknowledgements(messages, transaction)
       await createImpsReturnFile(messages, transaction)
     }
     console.log('Acknowledgements published:', util.inspect(messages, false, null, true))

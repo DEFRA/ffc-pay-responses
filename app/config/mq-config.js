@@ -24,9 +24,6 @@ const mqSchema = Joi.object({
     name: Joi.string(),
     address: Joi.string()
   },
-  eventTopic: {
-    address: Joi.string()
-  },
   eventsTopic: {
     address: Joi.string()
   }
@@ -54,9 +51,6 @@ const mqConfig = {
     name: process.env.RETURN_TOPIC_NAME,
     address: process.env.RETURN_TOPIC_ADDRESS
   },
-  eventTopic: {
-    address: process.env.EVENT_TOPIC_ADDRESS
-  },
   eventsTopic: {
     address: process.env.EVENTS_TOPIC_ADDRESS
   }
@@ -74,13 +68,11 @@ if (mqResult.error) {
 const submitSubscription = { ...mqResult.value.messageQueue, ...mqResult.value.submitSubscription }
 const acknowledgementTopic = { ...mqResult.value.messageQueue, ...mqResult.value.acknowledgementTopic }
 const returnTopic = { ...mqResult.value.messageQueue, ...mqResult.value.returnTopic }
-const eventTopic = { ...mqResult.value.messageQueue, ...mqResult.value.eventTopic }
 const eventsTopic = { ...mqResult.value.messageQueue, ...mqResult.value.eventsTopic }
 
 module.exports = {
   submitSubscription,
   acknowledgementTopic,
   returnTopic,
-  eventTopic,
   eventsTopic
 }

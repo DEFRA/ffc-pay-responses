@@ -38,16 +38,15 @@ describe('get IMPS acknowledgement lines', () => {
   })
 
   test.each([
-    ['successful acknowledgement', false, ['H,1,04,Trader1,INV001,I,,,,,,']],
-    ['unsuccessful acknowledgement', false, ['H,1,04,Trader1,INV001,R,,,,,,']],
-    ['filter by sequence when useV2ReturnFiles true', true, ['H,1,04,Trader1,INV001,false,,,,,,']]
-  ])('should return correct acknowledgement lines for %s', async (_, useV2, expectedLines) => {
+    ['successful acknowledgement', ['H,1,04,Trader1,INV001,I,,,,,,']],
+    ['unsuccessful acknowledgement', ['H,1,04,Trader1,INV001,R,,,,,,']],
+    ['filter by sequence', ['H,1,04,Trader1,INV001,false,,,,,,']]
+  ])('should return correct acknowledgement lines for %s', async (_, expectedLines) => {
     if (_ === 'unsuccessful acknowledgement') {
       acknowledgements[0].success = false
     }
 
-    config.useV2ReturnFiles = useV2
-    const sequence = useV2 ? 5 : 1
+    const sequence = 5
 
     const result = await getImpsAcknowledgementLines(acknowledgements, sequence, transaction)
 
