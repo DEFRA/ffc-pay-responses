@@ -13,7 +13,6 @@ const { isImpsAcknowledgementFile } = require('../../../../app/processing/acknow
 const { saveImpsAcknowledgements } = require('../../../../app/processing/acknowledgements/save-imps-acknowledgements')
 const { parseAcknowledgementFile } = require('../../../../app/processing/acknowledgements/parse-acknowledgement-file')
 const { quarantineFile } = require('../../../../app/processing/quarantine-file')
-const config = require('../../../../app/config')
 const { processAcknowledgement } = require('../../../../app/processing/acknowledgements/process-acknowledgement')
 
 const filename = 'mock_0001_Ack.xml'

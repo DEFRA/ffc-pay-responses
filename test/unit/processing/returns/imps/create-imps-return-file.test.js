@@ -1,5 +1,4 @@
 const { IMPS } = require('../../../../../app/constants/schemes')
-const config = require('../../../../../app/config')
 
 jest.mock('../../../../../app/currency-convert', () => ({ convertToPounds: jest.fn() }))
 jest.mock('../../../../../app/processing/returns/sequence/get-and-increment-sequence', () => ({ getAndIncrementSequence: jest.fn() }))

@@ -1,4 +1,3 @@
-const config = require('../../../../../app/config')
 const db = require('../../../../../app/data')
 const { getImpsAcknowledgementLines } = require('../../../../../app/processing/returns/imps/get-imps-acknowledgement-lines')
 
