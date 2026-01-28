@@ -48,7 +48,7 @@ describe('createImpsReturnFile', () => {
   })
 
   test('creates return file with proper content', async () => {
-    await createImpsReturnFile(acknowledgements, transaction)
+    await createImpsReturnFile(transaction)
     const totalLines = acknowledgementLines.length + pendingReturnLines.length
     const expectedHeader = `B,04,${sequenceString},${totalLines},${convertToPounds(totalValue)},S`
     const expectedContent = `${expectedHeader}\r\n${acknowledgementLines.join('\r\n')}\r\n${pendingReturnLines.join('\r\n')}`
@@ -68,7 +68,7 @@ describe('createImpsReturnFile', () => {
     ['all acknowledgements received', true, false]
   ])('%s', async (_, allReceived, shouldPublish) => {
     allImpsAcknowledgementsReceived.mockResolvedValue(allReceived)
-    await createImpsReturnFile(acknowledgements, transaction)
+    await createImpsReturnFile(transaction)
 
     if (!allReceived) {
       expect(updateSequence).toHaveBeenCalledWith({ schemeId: IMPS, nextReturn: sequence }, transaction)

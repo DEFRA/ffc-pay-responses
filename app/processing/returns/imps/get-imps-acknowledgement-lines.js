@@ -7,8 +7,7 @@ const getImpsAcknowledgementLines = async (acknowledgements, sequence, transacti
   for (const acknowledgement of acknowledgements) {
     const batchNumber = await db.impsBatchNumber.findOne({ where: { invoiceNumber: acknowledgement.invoiceNumber, frn: acknowledgement.frn }, attributes: ['batchNumber', 'trader'], transaction })
     if (batchNumber) {
-      let success = acknowledgement.success ? 'I' : 'R'
-      success = acknowledgement.success
+      const success = acknowledgement.success
       acknowledgementLines.push(`H,${batchNumber.batchNumber},04,${batchNumber.trader},${acknowledgement.invoiceNumber},${success},,,,,,`)
       batchNumbers.push(batchNumber.batchNumber)
     }

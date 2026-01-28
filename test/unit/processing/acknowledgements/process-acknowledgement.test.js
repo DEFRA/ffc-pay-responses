@@ -57,7 +57,7 @@ describe('process acknowledgement', () => {
       await processAcknowledgement(filename, transaction)
 
       if (expected) {
-        expect(createImpsReturnFile).toHaveBeenCalledWith(messages, transaction)
+        expect(createImpsReturnFile).toHaveBeenCalledWith(transaction)
       } else expect(createImpsReturnFile).not.toHaveBeenCalled()
     }
   )

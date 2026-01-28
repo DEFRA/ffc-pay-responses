@@ -10,14 +10,14 @@ const { allImpsAcknowledgementsReceived } = require('./all-imps-acknowledgements
 const { setImpsAcknowledgementsExported } = require('./set-imps-acknowledgements-exported')
 const { updateSequence } = require('../sequence/update-sequence')
 
-const createImpsReturnFile = async (acknowledgements, transaction) => {
+const createImpsReturnFile = async (transaction) => {
   const { sequence, sequenceString } = await getAndIncrementSequence(IMPS, transaction)
 
   const returnFilename = `RET_IMPS_AP_${sequenceString}.INT`
   const controlFilename = `CTL_${returnFilename}`
 
   const responseData = []
-  acknowledgements = await getImpsPendingAcknowledgements(sequence, transaction)
+  const acknowledgements = await getImpsPendingAcknowledgements(sequence, transaction)
   const receivedAllAcknowledgements = await allImpsAcknowledgementsReceived(acknowledgements, sequence, transaction)
   if (!receivedAllAcknowledgements) {
     await updateSequence({ schemeId: IMPS, nextReturn: sequence }, transaction)
