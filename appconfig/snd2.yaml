@@ -4,10 +4,10 @@ environmentCode: snd2
 pr: true
 container:
   messageQueueHost: SNDFFCINFSB2001.servicebus.windows.net
-  acknowledgementTopicAddress: ffc-pay-acknowledgement-snd2
-  returnTopicAddress: ffc-pay-return-snd2
-  eventsTopicAddress: ffc-pay-events-snd2
-  paymentSubmitTopicAddress: ffc-pay-submit-snd2
+  acknowledgementTopicAddress: ffc-pay-acknowledgement
+  returnTopicAddress: ffc-pay-return
+  eventsTopicAddress: ffc-pay-events
+  paymentSubmitTopicAddress: ffc-pay-submit
   paymentSubmitSubscriptionAddress: ffc-pay-responses
   azureStorageAccountName: snd2ffcpayst2001
   azureStorageConnectionString: dummy

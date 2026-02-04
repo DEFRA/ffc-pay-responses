@@ -3,10 +3,10 @@ environment: production
 environmentCode: test
 container:
   messageQueueHost: DEVFFCINFSB1001.servicebus.windows.net
-  acknowledgementTopicAddress: ffc-pay-acknowledgement-test
-  returnTopicAddress: ffc-pay-return-test
-  eventsTopicAddress: ffc-pay-events-test
-  paymentSubmitTopicAddress: ffc-pay-submit-test
+  acknowledgementTopicAddress: ffc-pay-acknowledgement
+  returnTopicAddress: ffc-pay-return
+  eventsTopicAddress: ffc-pay-events
+  paymentSubmitTopicAddress: ffc-pay-submit
   paymentSubmitSubscriptionAddress: ffc-pay-responses
   azureStorageAccountName: testffcpayst1001
   azureStorageConnectionString: dummy
