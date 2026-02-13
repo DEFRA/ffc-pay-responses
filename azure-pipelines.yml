@@ -46,14 +46,14 @@ extends:
     # failOnThreshold: moderate
     variableGroupName: ffc-pay-responses-env-var
     pr_params:
-      processingActive: ${{ eq(variables['pr_processingActive'], 'true') }}
+      container.processingActive: ${{ eq(variables['pr_processingActive'], 'true') }}
     snd2_params:
-      processingActive: ${{ eq(variables['snd2_processingActive'], 'true') }}
+      container.processingActive: ${{ eq(variables['snd2_processingActive'], 'true') }}
     dev_params:
-      processingActive: ${{ eq(variables['dev_processingActive'], 'true') }}
+      container.processingActive: ${{ eq(variables['dev_processingActive'], 'true') }}
     test_params:
-      processingActive: ${{ eq(variables['test_processingActive'], 'true') }}
+      container.processingActive: ${{ eq(variables['test_processingActive'], 'true') }}
     pre_params:
-      processingActive: ${{ eq(variables['pre_processingActive'], 'true') }}
+      container.processingActive: ${{ eq(variables['pre_processingActive'], 'true') }}
     prd_params:
-      processingActive: ${{ eq(variables['prd_processingActive'], 'true') }}
+      container.processingActive: ${{ eq(variables['prd_processingActive'], 'true') }}
