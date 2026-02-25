@@ -13,5 +13,6 @@ module.exports = {
   Delinked: 13,
   SFIExpanded: 14,
   FFCSITICOHTR: 15,
-  FFCSITICOHTC: 16
+  FFCSITICOHTC: 16,
+  FPTT: 17
 }
