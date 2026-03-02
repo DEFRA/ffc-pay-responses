@@ -1,0 +1,59 @@
+# Pipeline name convention
+name: '$(Build.SourceBranchName)$(System.PullRequest.SourceBranch)$(Rev:.r)'
+
+# Trigger configuration
+trigger:
+  - main
+  - feature/*
+  - release/*
+
+pr:
+  - main
+  - releases/*
+
+# Parameters
+parameters:
+  - name: prDeployment
+    type: boolean
+    default: true
+  - name: branchDeployment
+    type: boolean
+    default: true
+  - name: sndDeployment
+    type: boolean
+    default: true
+
+# Resources
+resources:
+  repositories:
+    - repository: templates
+      endpoint: DEFRA
+      type: github
+      name: defra/fcp-pipeline-common
+      # ref: pl-709   # Optional: build specific pipeline branch
+
+# Pipeline template
+extends:
+  template: fcp-common-pipeline.yaml@templates
+  parameters:
+    appFrameworkType: nodejs   # Optional: nodejs (default), dotnet, java
+    Type: kubernetes           # Optional: kubernetes (default), npm, functions, nuget
+    npmLegacyPeerDeps: false   # Optional: default is false
+    dockerFilePath: Dockerfile # Optional default is Dockerfile
+    failOnThreshold: moderate  # Optional: moderate (default), low, high, critical
+    prDeployment: ${{ parameters.prDeployment }}
+    branchDeployment: ${{ parameters.branchDeployment }}
+    sndDeployment: ${{ parameters.sndDeployment }}
+    variableGroupName: ffc-pay-responses-env-var
+    pr_params:
+      container.processingActive: ${{ eq(variables['pr_processingActive'], 'true') }}
+    snd2_params:
+      container.processingActive: ${{ eq(variables['snd2_processingActive'], 'true') }}
+    dev_params:
+      container.processingActive: ${{ eq(variables['dev_processingActive'], 'true') }}
+    test_params:
+      container.processingActive: ${{ eq(variables['test_processingActive'], 'true') }}
+    pre_params:
+      container.processingActive: ${{ eq(variables['pre_processingActive'], 'true') }}
+    prd_params:
+      container.processingActive: ${{ eq(variables['prd_processingActive'], 'true') }}

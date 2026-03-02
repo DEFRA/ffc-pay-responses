@@ -13,7 +13,6 @@ const { isImpsAcknowledgementFile } = require('../../../../app/processing/acknow
 const { saveImpsAcknowledgements } = require('../../../../app/processing/acknowledgements/save-imps-acknowledgements')
 const { parseAcknowledgementFile } = require('../../../../app/processing/acknowledgements/parse-acknowledgement-file')
 const { quarantineFile } = require('../../../../app/processing/quarantine-file')
-const config = require('../../../../app/config')
 const { processAcknowledgement } = require('../../../../app/processing/acknowledgements/process-acknowledgement')
 
 const filename = 'mock_0001_Ack.xml'
@@ -28,7 +27,6 @@ describe('process acknowledgement', () => {
     parseAcknowledgementFile.mockResolvedValue(messages)
     isImpsAcknowledgementFile.mockReturnValue(false)
     saveImpsAcknowledgements.mockResolvedValue(true)
-    config.useV2ReturnFiles = true
   })
 
   test('downloads and parses file, sends messages, archives file', async () => {
@@ -59,24 +57,23 @@ describe('process acknowledgement', () => {
       await processAcknowledgement(filename, transaction)
 
       if (expected) {
-        expect(createImpsReturnFile).toHaveBeenCalledWith(messages, transaction)
+        expect(createImpsReturnFile).toHaveBeenCalledWith(transaction)
       } else expect(createImpsReturnFile).not.toHaveBeenCalled()
     }
   )
 
   test.each([
-    [true, true],
-    [true, false],
-    [false, true],
-    [false, false]
+    [true],
+    [true],
+    [false],
+    [false]
   ])(
-    'saveImpsAcknowledgements called if IMPS and useV2ReturnFiles: isIMPS=%s, useV2=%s',
-    async (isIMPS, useV2) => {
+    'saveImpsAcknowledgements called if IMPS: isIMPS=%s',
+    async (isIMPS) => {
       isImpsAcknowledgementFile.mockReturnValue(isIMPS)
-      config.useV2ReturnFiles = useV2
       await processAcknowledgement(filename, transaction)
 
-      if (isIMPS && useV2) {
+      if (isIMPS) {
         expect(saveImpsAcknowledgements).toHaveBeenCalledWith(messages, transaction)
       } else expect(saveImpsAcknowledgements).not.toHaveBeenCalled()
     }
