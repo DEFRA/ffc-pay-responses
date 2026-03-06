@@ -46,14 +46,14 @@ extends:
     sndDeployment: ${{ parameters.sndDeployment }}
     variableGroupName: ffc-pay-responses-env-var
     pr_params:
-      container.processingActive: ${{ eq(variables['pr_processingActive'], 'true') }}
+      container.processingActive: $(pr_processingActive)
     snd2_params:
-      container.processingActive: ${{ eq(variables['snd2_processingActive'], 'true') }}
+      container.processingActive: $(snd2_processingActive)
     dev_params:
-      container.processingActive: ${{ eq(variables['dev_processingActive'], 'true') }}
+      container.processingActive: $(dev_processingActive)
     test_params:
-      container.processingActive: ${{ eq(variables['test_processingActive'], 'true') }}
+      container.processingActive: $(test_processingActive)
     pre_params:
-      container.processingActive: ${{ eq(variables['pre_processingActive'], 'true') }}
+      container.processingActive: $(pre_processingActive)
     prd_params:
-      container.processingActive: ${{ eq(variables['prd_processingActive'], 'true') }}
+      container.processingActive: $(prd_processingActive)
