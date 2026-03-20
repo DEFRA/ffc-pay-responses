@@ -30,13 +30,13 @@
     "@azure/storage-blob": "12.29.1",
     "@hapi/hapi": "21.4.0",
     "applicationinsights": "2.9.6",
-    "ffc-database": "1.0.23",
-    "ffc-messaging": "2.10.1",
-    "ffc-pay-event-publisher": "1.2.0",
+    "ffc-database": "1.0.24",
+    "ffc-messaging": "2.10.4",
+    "ffc-pay-event-publisher": "1.2.1",
     "hapi-pino": "13.0.0",
     "log-timestamp": "0.3.0",
     "moment": "2.29.4",
-    "sequelize": "6.32.1",
+    "sequelize": "6.37.8",
     "xml2js": "0.6.2"
   },
   "devDependencies": {

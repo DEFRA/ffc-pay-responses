@@ -17,7 +17,6 @@ container:
   archiveFolder: archive
   quarantineFolder: quarantine
   returnFolder: return
-  processingActive: true
 secretProviderClass:
   azure:
     keyvaultName: PRDFFCINFKV1001
