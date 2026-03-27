@@ -9,13 +9,11 @@ data:
   PAYMENTSUBMIT_TOPIC_ADDRESS: {{ .Values.container.paymentSubmitTopicAddress }}-{{ .Values.environmentCode }}
   ACKNOWLEDGEMENT_TOPIC_ADDRESS: {{ .Values.container.acknowledgementTopicAddress }}-{{ .Values.environmentCode }}
   RETURN_TOPIC_ADDRESS: {{ .Values.container.returnTopicAddress }}-{{ .Values.environmentCode }}
-  EVENT_TOPIC_ADDRESS: {{ .Values.container.eventTopicAddress }}-{{ .Values.environmentCode }}
   EVENTS_TOPIC_ADDRESS: {{ .Values.container.eventsTopicAddress }}-{{ .Values.environmentCode }}
   {{ else }}
   PAYMENTSUBMIT_TOPIC_ADDRESS: {{ quote .Values.container.paymentSubmitTopicAddress }}
   ACKNOWLEDGEMENT_TOPIC_ADDRESS: {{ quote .Values.container.acknowledgementTopicAddress }}
   RETURN_TOPIC_ADDRESS: {{ quote .Values.container.returnTopicAddress }}
-  EVENT_TOPIC_ADDRESS: {{ quote .Values.container.eventTopicAddress }}
   EVENTS_TOPIC_ADDRESS: {{ quote .Values.container.eventsTopicAddress }}
   {{- end }}
   PAYMENTSUBMIT_SUBSCRIPTION_ADDRESS: {{ quote .Values.container.paymentSubmitSubscriptionAddress }}
@@ -28,9 +26,9 @@ data:
   AZURE_STORAGE_ARCHIVE: {{ quote .Values.container.archiveFolder }}
   AZURE_STORAGE_QUARANTINE: {{ quote .Values.container.quarantineFolder }}
   AZURE_STORAGE_RETURN: {{ quote .Values.container.returnFolder }}
-  USE_V2_RETURN_FILES: {{ quote .Values.container.useV2ReturnFiles }}
   POSTGRES_DB: {{ quote .Values.postgresService.postgresDb }}
   POSTGRES_HOST: {{ quote .Values.postgresService.postgresqlHost }}
   POSTGRES_PORT: {{ quote .Values.postgresService.postgresPort }}
   POSTGRES_SCHEMA_NAME: {{ quote .Values.postgresService.postgresSchema }}
+  POSTGRES_USERNAME: {{ .Values.postgresService.postgresUser | quote }}
 {{- end -}}
