@@ -18,4 +18,3 @@ container:
   archiveFolder: archive
   quarantineFolder: quarantine
   returnFolder: return
-  processingActive: true
