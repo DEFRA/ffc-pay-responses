@@ -1,6 +1,6 @@
 {
   "name": "ffc-pay-responses",
-  "version": "1.10.32",
+  "version": "1.10.33",
   "description": "FFC payment response processing",
   "homepage": "https://github.com/DEFRA/ffc-pay-responses",
   "main": "app/index.js",
@@ -31,8 +31,8 @@
     "@hapi/hapi": "21.4.0",
     "applicationinsights": "2.9.6",
     "ffc-database": "1.0.24",
-    "ffc-messaging": "2.10.4",
-    "ffc-pay-event-publisher": "1.2.1",
+    "ffc-messaging": "2.10.5",
+    "ffc-pay-event-publisher": "1.2.3",
     "hapi-pino": "13.0.0",
     "log-timestamp": "0.3.0",
     "moment": "2.29.4",
