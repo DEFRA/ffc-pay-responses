@@ -10,7 +10,7 @@ services:
     depends_on:
       - ffc-pay-responses-postgres
       - ffc-pay-responses-azurite
-      - servicebus-emulator
+      - ffc-pay-responses-servicebus-emulator
     command: npm run test
     volumes:
       - ./app:/home/node/app
@@ -33,19 +33,18 @@ services:
   ffc-pay-responses-postgres:
     volumes:
       - postgres_data:/var/lib/postgresql/data
-
   ffc-pay-responses-azurite:
     labels:
       com.docker.compose.pay.role: test
-  sqledge:
-    container_name: "sqledge"
+  ffc-pay-responses-sqledge:
+    container_name: "ffc-pay-responses-sqledge"
     image: "mcr.microsoft.com/azure-sql-edge:latest"
     environment:
       ACCEPT_EULA: "Y"
       MSSQL_SA_PASSWORD: "DummyStrongPa$$w0rd" # To be filled by user as per policy : https://learn.microsoft.com/en-us/sql/relational-databases/security/strong-passwords?view=sql-server-linux-ver16
 
-  servicebus-emulator:
-    container_name: "servicebus-emulator"
+  ffc-pay-responses-servicebus-emulator:
+    container_name: "ffc-pay-responses-servicebus-emulator"
     image: mcr.microsoft.com/azure-messaging/servicebus-emulator:latest
     pull_policy: always
     volumes:
@@ -53,11 +52,11 @@ services:
     ports:
       - "5672:5672"
     environment:
-      SQL_SERVER: sqledge
+      SQL_SERVER: ffc-pay-responses-sqledge
       MSSQL_SA_PASSWORD: "DummyStrongPa$$w0rd" # Password should be same as what is set for SQL Edge
       ACCEPT_EULA: "Y"
     depends_on:
-      - sqledge
+      - ffc-pay-responses-sqledge
 
     healthcheck:
       test: ["CMD-SHELL", "nc -z localhost 5672"]
