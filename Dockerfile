@@ -13,7 +13,7 @@ ENV PORT ${PORT}
 EXPOSE ${PORT} ${PORT_DEBUG}
 
 COPY --chown=node:node package*.json ./
-RUN npm install
+RUN npm ci
 COPY --chown=node:node . .
 CMD [ "npm", "run", "start:watch" ]
 
@@ -24,5 +24,5 @@ LABEL uk.gov.defra.ffc.parent-image=defradigital/node:${PARENT_VERSION}
 
 COPY --from=development /home/node/app/ ./app/
 COPY --from=development /home/node/package*.json ./
-RUN HUSKY=0 npm ci
+RUN HUSKY=0 npm ci --ignore-scripts
 CMD [ "node", "app" ]

@@ -37,6 +37,6 @@ services:
 
   ffc-pay-responses-azurite:
     image: mcr.microsoft.com/azure-storage/azurite:3.35.0
-    command: "azurite-blob --skipApiVersionCheck --loose --blobHost 0.0.0.0"
+    command: "azurite-blob --skipApiVersionCheck --skipApiVersionCheck --blobHost 0.0.0.0"
     labels:
       com.docker.compose.pay.role: ffc-pay-responses-azurite
