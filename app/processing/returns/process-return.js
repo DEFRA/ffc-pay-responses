@@ -1,4 +1,3 @@
-const util = require('util')
 const { downloadFile, archiveFile } = require('../../storage')
 const { parseReturnFile } = require('./parse-return-file')
 const { quarantineFile } = require('../quarantine-file')
@@ -25,7 +24,7 @@ const processReturn = async (filename, transaction) => {
     if (canReturnMessage(filename)) {
       await sendReturnMessages(messages)
     }
-    console.log('Returns published:', util.inspect(messages, false, null, true))
+    console.log('Returns published:', messages.map(({ sourceSystem, reference }) => ({ sourceSystem, reference})))
     if (isImpsReturnFile(filename)) {
       await saveImpsReturns(content, transaction)
     }

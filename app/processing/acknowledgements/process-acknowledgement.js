@@ -1,4 +1,3 @@
-const util = require('util')
 const { sendAcknowledgementMessages } = require('../../messaging')
 const { downloadFile, archiveFile } = require('../../storage')
 const { createImpsReturnFile } = require('../returns/imps/create-imps-return-file')
@@ -22,7 +21,7 @@ const processAcknowledgement = async (filename, transaction) => {
       await saveImpsAcknowledgements(messages, transaction)
       await createImpsReturnFile(transaction)
     }
-    console.log('Acknowledgements published:', util.inspect(messages, false, null, true))
+    console.log('Acknowledgements published:', messages.map(({ frn, invoiceNumber, filename }) => ({ frn, invoiceNumber, filename })))
     await archiveFile(filename)
   }
 }
