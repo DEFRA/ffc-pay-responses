@@ -28,7 +28,7 @@
   "license": "OGL-UK-3.0",
   "dependencies": {
     "@azure/identity": "4.4.1",
-    "@azure/monitor-opentelemetry": "1.16.0",
+    "@azure/monitor-opentelemetry": "1.18.0",
     "@azure/storage-blob": "12.31.0",
     "@hapi/hapi": "21.4.0",
     "ffc-database": "1.0.24",
@@ -53,5 +53,8 @@
     "ignore": [
       "**/test-output/**"
     ]
+  },
+  "overrides": {
+    "protobufjs": "8.2.0"
   }
 }
