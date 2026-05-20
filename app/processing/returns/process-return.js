@@ -24,7 +24,7 @@ const processReturn = async (filename, transaction) => {
     if (canReturnMessage(filename)) {
       await sendReturnMessages(messages)
     }
-    console.log('Returns published:', messages.map(({ sourceSystem, reference }) => ({ sourceSystem, reference})))
+    console.log('Returns published:', messages.map(({ sourceSystem, reference }) => ({ sourceSystem, reference })))
     if (isImpsReturnFile(filename)) {
       await saveImpsReturns(content, transaction)
     }
