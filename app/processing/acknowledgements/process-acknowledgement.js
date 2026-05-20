@@ -21,7 +21,7 @@ const processAcknowledgement = async (filename, transaction) => {
       await saveImpsAcknowledgements(messages, transaction)
       await createImpsReturnFile(transaction)
     }
-    console.log('Acknowledgements published:', messages.map(({ frn, invoiceNumber, filename }) => ({ frn, invoiceNumber, filename })))
+    console.log('Acknowledgements published:', messages.map(({ frn, invoiceNumber }) => ({ frn, invoiceNumber, filename })))
     await archiveFile(filename)
   }
 }
