@@ -1,6 +1,6 @@
 {
   "name": "ffc-pay-responses",
-  "version": "1.10.40",
+  "version": "1.10.41",
   "description": "FFC payment response processing",
   "homepage": "https://github.com/DEFRA/ffc-pay-responses",
   "main": "app/index.js",
