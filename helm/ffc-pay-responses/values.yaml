@@ -42,6 +42,7 @@ container:
   returnFolder: return
   processingActive: true
   port: 3012
+  azureLogLevel: error
 
 postgresService:
   postgresDb: ffc_pay_responses
