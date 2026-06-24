@@ -6,6 +6,7 @@ data:
   OTEL_SERVICE_NAME: {{ quote .Values.name }} 
   MESSAGE_QUEUE_HOST: {{ quote .Values.container.messageQueueHost }}
   PROCESSING_ACTIVE: {{ quote .Values.container.processingActive }}
+  PROCESSING_INTERVAL: {{ quote .Values.container.processingInterval }}
   {{- if and (.Values.environmentCode) (not .Values.pr) }}
   PAYMENTSUBMIT_TOPIC_ADDRESS: {{ .Values.container.paymentSubmitTopicAddress }}-{{ .Values.environmentCode }}
   ACKNOWLEDGEMENT_TOPIC_ADDRESS: {{ .Values.container.acknowledgementTopicAddress }}-{{ .Values.environmentCode }}

@@ -41,6 +41,7 @@ container:
   quarantineFolder: quarantine
   returnFolder: return
   processingActive: true
+  processingInterval: 10000
   port: 3012
   azureLogLevel: error
 
