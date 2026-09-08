@@ -1,0 +1,17 @@
+<?xml version="1.1" encoding="UTF-8" standalone="no"?>
+<databaseChangeLog xmlns="http://www.liquibase.org/xml/ns/dbchangelog" xmlns:ext="http://www.liquibase.org/xml/ns/dbchangelog-ext" xmlns:pro="http://www.liquibase.org/xml/ns/pro" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog-ext http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-ext.xsd http://www.liquibase.org/xml/ns/pro http://www.liquibase.org/xml/ns/pro/liquibase-pro-3.9.xsd http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.9.xsd">
+  <changeSet author="Alistair Wishart" id="1">
+    <tagDatabase tag="v1.9.0" />
+  </changeSet>
+
+  <changeSet author="Alistair Wishart" id="2">
+    <createIndex
+      indexName="idx_imps_batch_invoice_frn_batch"
+      tableName="impsBatchNumbers">
+      <column name="invoiceNumber"/>
+      <column name="frn"/>
+      <column name="batch"/>
+    </createIndex>
+
+  </changeSet>
+</databaseChangeLog>
