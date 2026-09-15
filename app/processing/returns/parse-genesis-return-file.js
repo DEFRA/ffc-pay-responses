@@ -1,17 +1,19 @@
 const moment = require('moment')
+const { getSourceSystems } = require('ffc-pay-schemes')
 const { convertToPence } = require('../../currency-convert')
 const { createHash } = require('./create-hash')
 const { AP } = require('../../constants/ledgers')
-const { GENESIS } = require('../../constants/source-systems')
+
+const { ES } = getSourceSystems()
 
 const parseGenesisReturnFile = (csv, filename) => {
   return csv.map(x => {
     const row = x.split('^')
-    const value = `${GENESIS}${row[1]}${row[2]}${row[3]}${row[4]}${row[5]}${row[6]}${row[7]}${row[8]}AP${filename}`
+    const value = `${ES}${row[1]}${row[2]}${row[3]}${row[4]}${row[5]}${row[6]}${row[7]}${row[8]}AP${filename}`
     const hash = createHash(value)
     if (row[0] === 'D') {
       return {
-        sourceSystem: GENESIS,
+        sourceSystem: ES,
         paymentId: row[1],
         transactionNumber: row[2],
         value: convertToPence(row[3]),

@@ -1,9 +1,10 @@
+const { getSchemeIds } = require('ffc-pay-schemes')
 const db = require('../../../app/data')
 const path = require('path')
 const { BlobServiceClient } = require('@azure/storage-blob')
 const config = require('../../../app/config')
 const processing = require('../../../app/processing')
-const { IMPS, ES, FC } = require('../../../app/constants/schemes')
+const { IMPS, ES, FC } = getSchemeIds()
 
 jest.useRealTimers()
 

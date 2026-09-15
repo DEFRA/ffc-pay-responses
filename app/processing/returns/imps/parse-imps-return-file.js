@@ -1,8 +1,9 @@
 const moment = require('moment')
+const { getSourceSystems } = require('ffc-pay-schemes')
 const { convertToPence } = require('../../../currency-convert')
 const { createHash } = require('../create-hash')
 const { AP } = require('../../../constants/ledgers')
-const { IMPS } = require('../../../constants/source-systems')
+const { IMPS } = getSourceSystems()
 
 const paymentJobNumberIndex = 1
 const fesCodeIndex = 2

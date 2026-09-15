@@ -5,6 +5,7 @@ const config = require('./config')
 const messaging = require('./messaging')
 const processing = require('./processing')
 const { start: startServer } = require('./server')
+const { updateSchemesDatabase } = require('./update-schemes-database')
 
 process.on(['SIGTERM', 'SIGINT'], async () => {
   await messaging.stop()
@@ -13,6 +14,7 @@ process.on(['SIGTERM', 'SIGINT'], async () => {
 
 const startApp = async () => {
   await startServer()
+  await updateSchemesDatabase()
   if (config.processingActive) {
     await messaging.start()
     await processing.start()

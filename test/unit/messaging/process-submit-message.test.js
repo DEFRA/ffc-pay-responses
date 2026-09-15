@@ -1,6 +1,7 @@
+const { getSchemeIds } = require('ffc-pay-schemes')
 const { processSubmitMessage } = require('../../../app/messaging/process-submit-message')
 const { saveImpsSubmission } = require('../../../app/messaging/save-imps-submission')
-const { IMPS } = require('../../../app/constants/schemes')
+const { IMPS } = getSchemeIds()
 
 jest.mock('../../../app/messaging/save-imps-submission')
 

@@ -1,17 +1,19 @@
 const moment = require('moment')
+const { getSourceSystems } = require('ffc-pay-schemes')
 const { convertToPence } = require('../../currency-convert')
 const { createHash } = require('./create-hash')
 const { AP } = require('../../constants/ledgers')
-const { GLOS } = require('../../constants/source-systems')
+
+const { FC } = getSourceSystems()
 
 const parseGlosReturnFile = (csv, filename) => {
   return csv.map(line => {
     const row = parseCsvLine(line)
     if (row.length >= 11) {
-      const value = `${GLOS}${row[0]}${row[1]}${row[2]}${row[3]}${row[4]}${row[5]}${row[6]}${row[7]}${row[8]}${row[9]}${row[10]}AP${filename}`
+      const value = `${FC}${row[0]}${row[1]}${row[2]}${row[3]}${row[4]}${row[5]}${row[6]}${row[7]}${row[8]}${row[9]}${row[10]}AP${filename}`
       const hash = createHash(value)
       return {
-        sourceSystem: GLOS,
+        sourceSystem: FC,
         sbi: Number(row[0]),
         frn: Number(row[1]),
         agreementNumber: row[2],
