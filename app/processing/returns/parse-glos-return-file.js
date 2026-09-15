@@ -6,25 +6,37 @@ const { AP } = require('../../constants/ledgers')
 
 const { FC } = getSourceSystems()
 
+const SBI_IDX = 0
+const FRN_IDX = 1
+const AGREEMENT_NUMBER_IDX = 2
+const CLAIM_NUMBER_IDX = 3
+const SETTLEMENT_DATE_IDX = 4
+const VALUE_IDX = 5
+const REFERENCE_IDX = 6
+const BANK_ACCOUNT_IDX = 7
+const BATCH_NUMBER_IDX = 8
+const SETTLED_IDX = 9
+const DETAIL_IDX = 10
+
 const parseGlosReturnFile = (csv, filename) => {
   return csv.map(line => {
     const row = parseCsvLine(line)
     if (row.length >= 11) {
-      const value = `${FC}${row[0]}${row[1]}${row[2]}${row[3]}${row[4]}${row[5]}${row[6]}${row[7]}${row[8]}${row[9]}${row[10]}AP${filename}`
+      const value = `${FC}${row[SBI_IDX]}${row[FRN_IDX]}${row[AGREEMENT_NUMBER_IDX]}${row[CLAIM_NUMBER_IDX]}${row[SETTLEMENT_DATE_IDX]}${row[VALUE_IDX]}${row[REFERENCE_IDX]}${row[BANK_ACCOUNT_IDX]}${row[BATCH_NUMBER_IDX]}${row[SETTLED_IDX]}${row[DETAIL_IDX]}AP${filename}`
       const hash = createHash(value)
       return {
         sourceSystem: FC,
-        sbi: Number(row[0]),
-        frn: Number(row[1]),
-        agreementNumber: row[2],
-        claimNumber: row[3],
-        settlementDate: row[4] === '' ? undefined : moment(row[4], ['YYYY-MM-DD', 'DD/MM/YYYY']).toISOString(),
-        value: convertToPence(row[5]),
-        reference: row[6],
-        bankAccount: row[7],
-        batchNumber: row[8],
-        settled: row[9] === 'D' || (row[9] === 'E' && row[6] !== ''),
-        detail: row[10],
+        sbi: Number(row[SBI_IDX]),
+        frn: Number(row[FRN_IDX]),
+        agreementNumber: row[AGREEMENT_NUMBER_IDX],
+        claimNumber: row[CLAIM_NUMBER_IDX],
+        settlementDate: row[SETTLEMENT_DATE_IDX] === '' ? undefined : moment(row[SETTLEMENT_DATE_IDX], ['YYYY-MM-DD', 'DD/MM/YYYY']).toISOString(),
+        value: convertToPence(row[VALUE_IDX]),
+        reference: row[REFERENCE_IDX],
+        bankAccount: row[BANK_ACCOUNT_IDX],
+        batchNumber: row[BATCH_NUMBER_IDX],
+        settled: row[SETTLED_IDX] === 'D' || (row[SETTLED_IDX] === 'E' && row[REFERENCE_IDX] !== ''),
+        detail: row[DETAIL_IDX],
         ledger: AP,
         referenceId: hash,
         filename
