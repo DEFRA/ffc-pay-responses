@@ -38,7 +38,7 @@
     "hapi-pino": "13.0.0",
     "joi": "18.2.9",
     "log-timestamp": "0.3.0",
-    "moment": "2.29.4",
+    "moment": "2.31.0",
     "sequelize": "6.37.8",
     "xml2js": "0.6.2"
   },
