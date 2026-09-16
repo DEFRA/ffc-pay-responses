@@ -1,4 +1,4 @@
-const { IMPS } = require('../../../constants/schemes')
+const { getSchemeIds } = require('ffc-pay-schemes')
 const { convertToPounds } = require('../../../currency-convert')
 const { getAndIncrementSequence } = require('../sequence/get-and-increment-sequence')
 const { publishReturnFile } = require('../publish-return-file')
@@ -9,6 +9,8 @@ const { getImpsPendingAcknowledgements } = require('./get-imps-pending-acknowled
 const { allImpsAcknowledgementsReceived } = require('./all-imps-acknowledgements-received')
 const { setImpsAcknowledgementsExported } = require('./set-imps-acknowledgements-exported')
 const { updateSequence } = require('../sequence/update-sequence')
+
+const { IMPS } = getSchemeIds()
 
 const createImpsReturnFile = async (transaction) => {
   const { sequence, sequenceString } = await getAndIncrementSequence(IMPS, transaction)

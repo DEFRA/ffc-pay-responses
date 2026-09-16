@@ -1,4 +1,4 @@
-const { IMPS } = require('../../../../../app/constants/schemes')
+const { getSchemeIds } = require('ffc-pay-schemes')
 
 jest.mock('../../../../../app/currency-convert', () => ({ convertToPounds: jest.fn() }))
 jest.mock('../../../../../app/processing/returns/sequence/get-and-increment-sequence', () => ({ getAndIncrementSequence: jest.fn() }))
@@ -23,6 +23,8 @@ const { getImpsPendingAcknowledgements } = require('../../../../../app/processin
 const { setImpsAcknowledgementsExported } = require('../../../../../app/processing/returns/imps/set-imps-acknowledgements-exported')
 const { updateSequence } = require('../../../../../app/processing/returns/sequence/update-sequence')
 const { publishReturnFile } = require('../../../../../app/processing/returns/publish-return-file')
+
+const { IMPS } = getSchemeIds()
 
 describe('createImpsReturnFile', () => {
   const acknowledgements = [
