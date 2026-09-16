@@ -7,12 +7,8 @@ const { IMPS, ES, FC } = require('../../../app/constants/schemes')
 
 jest.useRealTimers()
 
-const mockSendBatchMessages = jest.fn()
-jest.mock('ffc-messaging', () => ({
-  MessageBatchSender: jest.fn().mockImplementation(() => ({
-    sendBatchMessages: mockSendBatchMessages,
-    closeConnection: jest.fn()
-  }))
+jest.mock('../../../app/messaging/service-bus/send-batch-messages', () => ({
+  sendBatchMessages: jest.fn()
 }))
 
 jest.mock('ffc-pay-event-publisher', () => ({
@@ -20,6 +16,8 @@ jest.mock('ffc-pay-event-publisher', () => ({
     publishEvent: jest.fn()
   }))
 }))
+
+const { sendBatchMessages: mockSendBatchMessages } = require('../../../app/messaging/service-bus/send-batch-messages')
 
 const TEST_FILE = path.resolve(__dirname, '../../files/acknowledgement.xml')
 const TEST_INVALID_FILE = path.resolve(__dirname, '../../files/broken-acknowledgement.xml')
@@ -108,7 +106,7 @@ describe('process acknowledgement', () => {
     beforeEach(async () => { await processing.start() })
 
     test('sends all acknowledgements', () => {
-      expect(mockSendBatchMessages.mock.calls[0][0].length).toBe(4)
+      expect(mockSendBatchMessages.mock.calls[0][1].length).toBe(4)
     })
 
     test.each([
@@ -116,7 +114,7 @@ describe('process acknowledgement', () => {
       [2, null, null, false, null, 'Journal JN12345678 has been created Validation failed Line : 21.'],
       [3, null, null, false, null, 'Invalid bank details']
     ])('sends correct details for message index %i', (index, invoice, frn, success, filename, message) => {
-      const body = mockSendBatchMessages.mock.calls[0][0][index].body
+      const body = mockSendBatchMessages.mock.calls[0][1][index].body
       if (invoice) { expect(body.invoiceNumber).toBe(invoice) }
       if (frn) { expect(body.frn).toBe(frn) }
       if (success !== null) { expect(body.success).toBe(success) }
