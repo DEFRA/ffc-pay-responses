@@ -1,8 +1,9 @@
 const moment = require('moment')
+const { getSchemeIds } = require('ffc-pay-schemes')
 const { createGenesisReturnFile } = require('../../../../app/processing/returns/create-genesis-return-file')
 const { publishReturnFile } = require('../../../../app/processing/returns/publish-return-file')
 const { getAndIncrementSequence } = require('../../../../app/processing/returns/sequence/get-and-increment-sequence')
-const { ES } = require('../../../../app/constants/schemes')
+const { ES } = getSchemeIds()
 
 jest.mock('../../../../app/processing/returns/sequence/get-and-increment-sequence')
 jest.mock('../../../../app/processing/returns/publish-return-file')

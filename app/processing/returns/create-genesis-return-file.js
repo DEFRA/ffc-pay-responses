@@ -1,7 +1,9 @@
 const moment = require('moment')
-const { ES } = require('../../constants/schemes')
+const { getSchemeIds } = require('ffc-pay-schemes')
 const { getAndIncrementSequence } = require('./sequence/get-and-increment-sequence')
 const { publishReturnFile } = require('./publish-return-file')
+
+const { ES } = getSchemeIds()
 
 const createGenesisReturnFile = async (content, filename, transaction) => {
   const { sequenceString } = await getAndIncrementSequence(ES, transaction)

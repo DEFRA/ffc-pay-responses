@@ -1,5 +1,5 @@
-const config = require('../config')
 const { EventPublisher } = require('ffc-pay-event-publisher')
+const config = require('../config')
 const { RESPONSE_REJECTED } = require('../constants/events')
 const { SOURCE } = require('../constants/source')
 
