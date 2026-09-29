@@ -1,4 +1,4 @@
-const db = require('../data')
+const { transaction: startTransaction, lock } = require('../database')
 const config = require('../config')
 const { getInboundFileList } = require('../storage')
 const { isAcknowledgementFile, processAcknowledgement } = require('./acknowledgements')
@@ -6,9 +6,9 @@ const { isReturnFile, processReturn } = require('./returns')
 const { isPaymentFile, processPaymentFile } = require('./payments')
 
 const start = async () => {
-  const transaction = await db.sequelize.transaction()
+  const transaction = await startTransaction()
   try {
-    await db.lock.findByPk(1, { transaction, lock: true })
+    await lock(transaction).where({ lockId: 1 }).forUpdate().first()
 
     const filenames = await getInboundFileList()
 
