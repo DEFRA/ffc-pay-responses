@@ -1,24 +1,36 @@
-const db = require('../../../../../app/data')
+const { createKnexMock, createQueryBuilder } = require('../../../../helpers/mock-knex')
+const mockDb = createKnexMock(['impsBatchNumbers', 'impsReturns'])
+
+jest.mock('../../../../../app/database', () => ({
+  client: mockDb.knex,
+  transaction: mockDb.transaction,
+  close: mockDb.close,
+  ...mockDb.tables
+}))
+
 const { getImpsPendingReturnLines } = require('../../../../../app/processing/returns/imps/get-imps-pending-return-lines')
 
 const pendingReturns = [
-  { impsReturnId: '1', trader: 'Trader1', invoiceNumber: 'INV001', status: 'S', paymentReference: 'Ref001', valueGBP: 123, paymentType: 'T', dateSettled: '2024-04-19', valueEUR: '321.00', sequence: 5, exported: null, update: jest.fn() },
-  { impsReturnId: '2', trader: 'Trader2', invoiceNumber: 'INV002', status: 'S', paymentReference: 'Ref002', valueGBP: 456, paymentType: 'T', dateSettled: '2024-04-12', valueEUR: '654.00', sequence: 1, exported: null, update: jest.fn() }
+  { impsReturnId: '1', trader: 'Trader1', invoiceNumber: 'INV001', status: 'S', paymentReference: 'Ref001', valueGBP: 123, paymentType: 'T', dateSettled: '2024-04-19', valueEUR: '321.00', sequence: 5, exported: null },
+  { impsReturnId: '2', trader: 'Trader2', invoiceNumber: 'INV002', status: 'S', paymentReference: 'Ref002', valueGBP: 456, paymentType: 'T', dateSettled: '2024-04-12', valueEUR: '654.00', sequence: 1, exported: null }
 ]
 
-const mockBatchNumber = { impsBatchNumberId: 1, frn: 1234567890, trader: 'Trader1', invoiceNumber: 'INV001', batch: 'Batch1', batchNumber: 'BAT001' }
+const mockBatchNumber = { batchNumber: 'BAT001' }
 
 describe('get IMPS pending return lines', () => {
   let acknowledgedBatchNumbers
 
-  beforeEach(async () => {
+  beforeEach(() => {
     jest.clearAllMocks()
     acknowledgedBatchNumbers = []
-    await db.sequelize.truncate({ cascade: true })
-    await db.impsBatchNumber.bulkCreate([mockBatchNumber])
-  })
+    mockDb.builder.resolves()
 
-  afterAll(async () => db.sequelize.close())
+    const matchBuilder = createQueryBuilder().resolves(mockBatchNumber)
+    const noMatchBuilder = createQueryBuilder().resolves(undefined)
+    mockDb.tables.impsBatchNumbers
+      .mockReturnValueOnce(matchBuilder)
+      .mockReturnValueOnce(noMatchBuilder)
+  })
 
   test.each([
     [[], ['H,BAT001,04,Trader1,INV001,S,Ref001,1.23,T,2024-04-19,321.00,'], 123],
@@ -30,9 +42,11 @@ describe('get IMPS pending return lines', () => {
     const shouldUpdate = expectedLines.length > 0
 
     if (shouldUpdate) {
-      expect(pendingReturns[0].update).toHaveBeenCalled()
+      expect(mockDb.tables.impsReturns).toHaveBeenCalled()
+      expect(mockDb.builder.where).toHaveBeenCalledWith({ impsReturnId: pendingReturns[0].impsReturnId })
+      expect(mockDb.builder.update).toHaveBeenCalledWith(expect.objectContaining({ exported: expect.any(Date) }))
     } else {
-      expect(pendingReturns[0].update).not.toHaveBeenCalled()
+      expect(mockDb.tables.impsReturns).not.toHaveBeenCalled()
     }
 
     expect(result).toEqual({ pendingReturnLines: expectedLines, totalValue: expectedTotal })
