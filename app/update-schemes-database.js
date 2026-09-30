@@ -5,14 +5,14 @@ const updateSchemesDatabase = async () => {
   console.log('Checking for updates to supported schemes')
   const supportedSchemes = getSchemes()
 
-  for (const { schemeId, schemeName } of supportedSchemes) {
+  await Promise.all(supportedSchemes.map(async ({ schemeId, schemeName }) => {
     const existingScheme = (await schemes().where({ schemeId }).first()) ?? null
 
     await schemes().insert({ schemeId, name: schemeName }).onConflict('schemeId').merge()
 
     const created = !existingScheme
     console.log(`${schemeName} ${created ? 'created' : 'updated'}`)
-  }
+  }))
 }
 
 module.exports = {

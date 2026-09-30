@@ -3,11 +3,15 @@ const { impsBatchNumbers, impsAcknowledgements } = require('../../database')
 const saveImpsAcknowledgements = async (content, transaction) => {
   const acknowledgements = []
 
-  for (const acknowledgement of content) {
-    const batchRecord = await impsBatchNumbers(transaction ?? undefined)
+  const batchRecords = await Promise.all(content.map(acknowledgement =>
+    impsBatchNumbers(transaction ?? undefined)
       .select('batchNumber')
       .where({ invoiceNumber: acknowledgement.invoiceNumber, frn: acknowledgement.frn })
       .first()
+  ))
+
+  for (const [index, acknowledgement] of content.entries()) {
+    const batchRecord = batchRecords[index]
     if (!batchRecord) {
       console.error(`No batch number found for invoiceNumber: ${acknowledgement.invoiceNumber}, frn: ${acknowledgement.frn}`)
       continue
