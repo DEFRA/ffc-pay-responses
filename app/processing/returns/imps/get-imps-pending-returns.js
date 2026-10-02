@@ -1,12 +1,10 @@
-const db = require('../../../data')
+const { impsReturns } = require('../../../database')
 
 const getImpsPendingReturns = async (transaction) => {
-  return db.impsReturn.findAll({
-    where: { exported: null },
-    transaction,
-    lock: true,
-    skipLocked: true
-  })
+  return impsReturns(transaction ?? undefined)
+    .whereNull('exported')
+    .forUpdate()
+    .skipLocked()
 }
 
 module.exports = {

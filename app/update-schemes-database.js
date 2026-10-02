@@ -1,23 +1,18 @@
 const { getSchemes } = require('ffc-pay-schemes')
-const db = require('./data')
+const { schemes } = require('./database')
 
 const updateSchemesDatabase = async () => {
   console.log('Checking for updates to supported schemes')
-  const schemes = getSchemes()
+  const supportedSchemes = getSchemes()
 
-  for (const { schemeId, schemeName } of schemes) {
-    const existingScheme = await db.scheme.findOne({
-      where: { schemeId }
-    })
+  await Promise.all(supportedSchemes.map(async ({ schemeId, schemeName }) => {
+    const existingScheme = (await schemes().where({ schemeId }).first()) ?? null
 
-    await db.scheme.upsert({
-      schemeId,
-      name: schemeName
-    })
+    await schemes().insert({ schemeId, name: schemeName }).onConflict('schemeId').merge()
 
     const created = !existingScheme
     console.log(`${schemeName} ${created ? 'created' : 'updated'}`)
-  }
+  }))
 }
 
 module.exports = {

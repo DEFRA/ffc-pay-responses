@@ -1,4 +1,5 @@
-const db = require('../../../../../app/data')
+const db = require('../../../../../app/database')
+const { truncate } = require('../../../../helpers/truncate')
 const { getImpsAcknowledgementLines } = require('../../../../../app/processing/returns/imps/get-imps-acknowledgement-lines')
 
 const acknowledgements = [
@@ -19,13 +20,13 @@ describe('get IMPS acknowledgement lines', () => {
   let transaction
 
   beforeAll(async () => {
-    await db.sequelize.sync({ force: true })
+    await truncate()
   })
 
   beforeEach(async () => {
     jest.clearAllMocks()
-    transaction = await db.sequelize.transaction()
-    await db.impsBatchNumber.bulkCreate([mockBatchNumber], { transaction })
+    transaction = await db.transaction()
+    await db.impsBatchNumbers(transaction).insert([mockBatchNumber])
   })
 
   afterEach(async () => {
@@ -33,12 +34,12 @@ describe('get IMPS acknowledgement lines', () => {
   })
 
   afterAll(async () => {
-    await db.sequelize.close()
+    await db.close()
   })
 
   test.each([
     ['successful acknowledgement', ['H,1,04,Trader1,INV001,I,,,,,,']],
-    ['unsuccessful acknowledgement', ['H,1,04,Trader1,INV001,R,,,,,,']],
+    ['unsuccessful acknowledgement', ['H,1,04,Trader1,INV001,R,,,,,,']]
   ])('should return correct acknowledgement lines for %s', async (_, expectedLines) => {
     if (_ === 'unsuccessful acknowledgement') {
       acknowledgements[0].success = 'R'

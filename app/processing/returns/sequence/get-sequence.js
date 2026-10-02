@@ -1,10 +1,10 @@
-const db = require('../../../data')
+const { sequences } = require('../../../database')
 
 const getSequence = async (schemeId, transaction) => {
-  return db.sequence.findByPk(schemeId, {
-    transaction,
-    lock: true
-  })
+  return (await sequences(transaction ?? undefined)
+    .where({ schemeId })
+    .forUpdate()
+    .first()) ?? null
 }
 
 module.exports = {

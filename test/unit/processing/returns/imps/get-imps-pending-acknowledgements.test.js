@@ -1,4 +1,5 @@
-const db = require('../../../../../app/data')
+const db = require('../../../../../app/database')
+const { truncate } = require('../../../../helpers/truncate')
 jest.useFakeTimers()
 const { getImpsPendingAcknowledgements } = require('../../../../../app/processing/returns/imps/get-imps-pending-acknowledgements')
 
@@ -14,14 +15,14 @@ describe('get IMPS pending acknowledgements', () => {
   ]
 
   beforeEach(async () => {
-    transaction = await db.sequelize.transaction()
-    await db.impsAcknowledgement.bulkCreate(ackData, { transaction })
+    transaction = await db.transaction()
+    await db.impsAcknowledgements(transaction).insert(ackData)
   })
 
   afterEach(async () => {
     await transaction.rollback()
     jest.clearAllMocks()
-    await db.impsAcknowledgement.destroy({ where: {}, truncate: true })
+    await truncate()
   })
 
   test.each([
