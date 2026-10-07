@@ -6,6 +6,10 @@ jest.mock('../../app/processing')
 const { start: mockStartProcessing } = require('../../app/processing')
 jest.mock('../../app/server')
 const { start: mockStartServer } = require('../../app/server')
+jest.mock('../../app/update-schemes-database', () => ({
+  updateSchemesDatabase: jest.fn()
+}))
+const { updateSchemesDatabase: mockUpdateSchemesDatabase } = require('../../app/update-schemes-database')
 
 const startApp = require('../../app')
 
@@ -15,14 +19,15 @@ describe('app start', () => {
   })
 
   test.each([
-    [true, 1, 1, 1],
-    [false, 0, 0, 1]
+    [true, 1, 1, 1, 1],
+    [false, 0, 1, 0, 1]
   ])(
-    'with processingActive=%s, starts processing=%i, messaging=%i, server=%i',
-    async (active, processingCalls, messagingCalls, serverCalls) => {
+    'with processingActive=%s, starts processing=%i, updatesSchemeDatabase=%i, messaging=%i, server=%i',
+    async (active, processingCalls, updateSchemesCalls, messagingCalls, serverCalls) => {
       config.processingActive = active
       await startApp()
       expect(mockStartProcessing).toHaveBeenCalledTimes(processingCalls)
+      expect(mockUpdateSchemesDatabase).toHaveBeenCalledTimes(updateSchemesCalls)
       expect(mockStartMessaging).toHaveBeenCalledTimes(messagingCalls)
       expect(mockStartServer).toHaveBeenCalledTimes(serverCalls)
     }

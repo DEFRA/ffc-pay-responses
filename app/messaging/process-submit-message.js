@@ -1,5 +1,7 @@
-const { IMPS } = require('../constants/schemes')
+const { getSchemeIds } = require('ffc-pay-schemes')
 const { saveImpsSubmission } = require('./save-imps-submission')
+
+const { IMPS } = getSchemeIds()
 
 const processSubmitMessage = async (message, receiver) => {
   try {
