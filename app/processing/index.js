@@ -5,16 +5,6 @@ const { isAcknowledgementFile, processAcknowledgement } = require('./acknowledge
 const { isReturnFile, processReturn } = require('./returns')
 const { isPaymentFile, processPaymentFile } = require('./payments')
 
-const processFile = async (filename, transaction) => {
-  if (isAcknowledgementFile(filename)) {
-    await processAcknowledgement(filename, transaction)
-  } else if (isReturnFile(filename)) {
-    await processReturn(filename, transaction)
-  } else if (isPaymentFile(filename)) {
-    await processPaymentFile(filename)
-  }
-}
-
 const start = async () => {
   const transaction = await startTransaction()
   try {
@@ -22,11 +12,17 @@ const start = async () => {
 
     const filenames = await getInboundFileList()
 
-    // files must be processed one at a time, in order, within the shared transaction
-    await filenames.reduce(
-      (previous, filename) => previous.then(() => processFile(filename, transaction)),
-      Promise.resolve()
-    )
+    for (const filename of filenames) {
+      if (isAcknowledgementFile(filename)) {
+        await processAcknowledgement(filename, transaction)
+      } else if (isReturnFile(filename)) {
+        await processReturn(filename, transaction)
+      } else if (isPaymentFile(filename)) {
+        await processPaymentFile(filename)
+      } else {
+        console.warn(`Unrecognised file ${filename} in inbound container, skipping`)
+      }
+    }
     await transaction.commit()
   } catch (err) {
     console.error(err)
