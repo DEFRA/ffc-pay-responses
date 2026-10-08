@@ -1,11 +1,10 @@
-const { MessageBatchSender } = require('ffc-messaging')
+const { getSender, sendBatchMessages: sendServiceBusMessages } = require('./service-bus')
 const { createMessage } = require('./create-message')
 
 const sendBatchMessage = async (body, type, options) => {
+  const sender = getSender(options)
   const messages = body.map(message => createMessage(message, type))
-  const sender = new MessageBatchSender(options)
-  await sender.sendBatchMessages(messages)
-  await sender.closeConnection()
+  await sendServiceBusMessages(sender, messages)
 }
 
 module.exports = {

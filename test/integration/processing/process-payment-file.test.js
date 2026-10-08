@@ -2,18 +2,9 @@ jest.useFakeTimers()
 
 jest.mock('ffc-pay-event-publisher')
 
-const mockSendBatchMessages = jest.fn()
-
-jest.mock('ffc-messaging', () => {
-  return {
-    MessageBatchSender: jest.fn().mockImplementation(() => {
-      return {
-        sendBatchMessages: mockSendBatchMessages,
-        closeConnection: jest.fn()
-      }
-    })
-  }
-})
+jest.mock('../../../app/messaging/service-bus/send-batch-messages', () => ({
+  sendBatchMessages: jest.fn()
+}))
 
 const path = require('path')
 const { BlobServiceClient } = require('@azure/storage-blob')
