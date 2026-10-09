@@ -1,20 +1,21 @@
 jest.useFakeTimers()
 
-const mockSendBatchMessages = jest.fn()
-const mockPublishEvent = jest.fn()
-
-jest.mock('ffc-messaging', () => ({
-  MessageBatchSender: jest.fn().mockImplementation(() => ({
-    sendBatchMessages: mockSendBatchMessages,
-    closeConnection: jest.fn()
-  }))
+jest.mock('../../../app/messaging/service-bus/send-batch-messages', () => ({
+  sendBatchMessages: jest.fn()
 }))
 
-jest.mock('ffc-pay-event-publisher', () => ({
-  EventPublisher: jest.fn().mockImplementation(() => ({
-    publishEvent: mockPublishEvent
-  }))
-}))
+jest.mock('ffc-pay-event-publisher', () => {
+  const mockPublishEvent = jest.fn()
+  return {
+    EventPublisher: jest.fn().mockImplementation(() => ({
+      publishEvent: mockPublishEvent
+    })),
+    mockPublishEvent
+  }
+})
+
+const { sendBatchMessages: mockSendBatchMessages } = require('../../../app/messaging/service-bus/send-batch-messages')
+const { mockPublishEvent } = require('ffc-pay-event-publisher')
 
 const path = require('path')
 const { BlobServiceClient } = require('@azure/storage-blob')
@@ -79,7 +80,7 @@ describe('process return', () => {
 
   test('sends all returns and correct invoice/settled info', async () => {
     await processing.start()
-    const calls = mockSendBatchMessages.mock.calls[0][0]
+    const calls = mockSendBatchMessages.mock.calls[0][1]
     expect(calls.length).toBe(6)
     expect(calls[0].body.invoiceNumber).toBe('S123456789A123456V001')
     expect(calls[0].body.settled).toBe(true)
