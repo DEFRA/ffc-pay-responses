@@ -20,7 +20,7 @@ const start = async () => {
       } else if (isPaymentFile(filename)) {
         await processPaymentFile(filename)
       } else {
-        console.warn(`Unrecognised file ${filename} in inbound container, skipping`)
+        continue
       }
     }
     await transaction.commit()
