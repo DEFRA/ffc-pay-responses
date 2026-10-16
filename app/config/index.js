@@ -1,7 +1,7 @@
 const Joi = require('joi')
 const mqConfig = require('./mq-config')
 const storageConfig = require('./storage-config')
-const dbConfig = require('./db-config')
+const dbConfig = require('./database')
 const serverConfig = require('./server-config')
 const { DEVELOPMENT, TEST, PRODUCTION } = require('../constants/environments')
 

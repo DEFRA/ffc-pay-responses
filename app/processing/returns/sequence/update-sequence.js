@@ -1,12 +1,9 @@
-const db = require('../../../data')
+const { sequences } = require('../../../database')
 
 const updateSequence = async (sequence, transaction) => {
-  await db.sequence.update({
-    nextReturn: sequence.nextReturn
-  }, {
-    where: { schemeId: sequence.schemeId },
-    transaction
-  })
+  await sequences(transaction ?? undefined)
+    .where({ schemeId: sequence.schemeId })
+    .update({ nextReturn: sequence.nextReturn })
 }
 
 module.exports = {

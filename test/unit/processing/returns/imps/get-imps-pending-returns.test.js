@@ -1,4 +1,5 @@
-const db = require('../../../../../app/data')
+const db = require('../../../../../app/database')
+const { truncate } = require('../../../../helpers/truncate')
 jest.useFakeTimers()
 
 const { getImpsPendingReturns } = require('../../../../../app/processing/returns/imps/get-imps-pending-returns')
@@ -7,20 +8,20 @@ describe('get IMPS pending returns', () => {
   let transaction
 
   beforeEach(async () => {
-    transaction = await db.sequelize.transaction()
+    transaction = await db.transaction()
 
-    await db.impsReturn.bulkCreate([
-      { impsReturnId: 1, batchNumber: '1', invoiceNumber: 'S123456789A123456V001', frn: 1234567890, exported: null },
-      { impsReturnId: 2, batchNumber: '1', invoiceNumber: 'S123456789B123456V001', frn: 1234567891, exported: null },
-      { impsReturnId: 3, batchNumber: '2', invoiceNumber: 'S123456789C123456V001', frn: 1234567892, exported: null },
-      { impsReturnId: 4, batchNumber: '3', invoiceNumber: 'S123456789D123456V001', frn: 1234567893, exported: new Date() }
-    ], { transaction })
+    await db.impsReturns(transaction).insert([
+      { impsReturnId: 1, invoiceNumber: 'S123456789A123456V001', exported: null },
+      { impsReturnId: 2, invoiceNumber: 'S123456789B123456V001', exported: null },
+      { impsReturnId: 3, invoiceNumber: 'S123456789C123456V001', exported: null },
+      { impsReturnId: 4, invoiceNumber: 'S123456789D123456V001', exported: new Date() }
+    ])
   })
 
   afterEach(async () => {
     await transaction.rollback()
     jest.clearAllMocks()
-    await db.impsReturn.destroy({ where: {}, truncate: true })
+    await truncate()
   })
 
   test('returns pending returns that have not been exported', async () => {

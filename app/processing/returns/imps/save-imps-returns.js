@@ -1,4 +1,4 @@
-const db = require('../../../data')
+const { impsReturns } = require('../../../database')
 const { convertToPence } = require('../../../currency-convert')
 
 const traderIndex = 3
@@ -29,7 +29,9 @@ const saveImpsReturns = async (content, transaction) => {
     }
   }).filter(line => line !== undefined)
 
-  await db.impsReturn.bulkCreate(returns, { transaction })
+  if (returns.length > 0) {
+    await impsReturns(transaction ?? undefined).insert(returns)
+  }
 
   console.log(`Saved ${returns.length} IMPS returns ready for next acknowledgement response`)
 }

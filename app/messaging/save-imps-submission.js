@@ -1,11 +1,13 @@
-const db = require('../data')
+const { impsBatchNumbers, transaction: startTransaction } = require('../database')
 const { getExistingImpsSubmission } = require('./get-existing-imps-submission')
 const { getImpsBatchNumber } = require('./get-imps-batch-number')
 const { sendResponsesFailureEvent } = require('../event/send-respones-failure-event')
 const { REPSONSES_PROCESSING_FAILED } = require('../constants/events')
+const TABLES = require('../constants/tables')
+const { pickColumns } = require('../constants/columns')
 
 const saveImpsSubmission = async (paymentRequest) => {
-  const transaction = await db.sequelize.transaction()
+  const transaction = await startTransaction()
   try {
     const existingSubmission = await getExistingImpsSubmission(paymentRequest.invoiceNumber, paymentRequest.frn, paymentRequest.batch, transaction)
     if (existingSubmission) {
@@ -13,7 +15,7 @@ const saveImpsSubmission = async (paymentRequest) => {
       await transaction.rollback()
     } else {
       const batchNumber = getImpsBatchNumber(paymentRequest.batch)
-      await db.impsBatchNumber.create({ ...paymentRequest, batchNumber }, { transaction })
+      await impsBatchNumbers(transaction).insert(pickColumns({ ...paymentRequest, batchNumber }, TABLES.impsBatchNumbers))
       await transaction.commit()
     }
   } catch (error) {

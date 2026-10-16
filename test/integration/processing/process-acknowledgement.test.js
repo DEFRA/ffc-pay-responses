@@ -1,5 +1,6 @@
 const { getSchemeIds } = require('ffc-pay-schemes')
-const db = require('../../../app/data')
+const db = require('../../../app/database')
+const { truncate } = require('../../helpers/truncate')
 const path = require('path')
 const { BlobServiceClient } = require('@azure/storage-blob')
 const config = require('../../../app/config')
@@ -49,13 +50,10 @@ describe('process acknowledgement', () => {
     await container.createIfNotExists()
     await uploadFile(VALID_FILENAME, TEST_FILE)
 
-    const existingSchemes = await db.scheme.findAll({ where: { schemeId: [ES, FC, IMPS] } })
-    if (!existingSchemes.length) {
-      await db.scheme.bulkCreate([{ schemeId: ES, name: 'ES' }, { schemeId: FC, name: 'FC' }, { schemeId: IMPS, name: 'IMPS' }])
-      await db.sequence.bulkCreate([{ schemeId: ES, nextReturn: 1 }, { schemeId: FC, nextReturn: 1 }, { schemeId: IMPS, nextReturn: 1 }])
-    }
+    await db.schemes().insert([{ schemeId: ES, name: 'ES' }, { schemeId: FC, name: 'FC' }, { schemeId: IMPS, name: 'IMPS' }]).onConflict('schemeId').merge()
+    await db.sequences().insert([{ schemeId: ES, nextReturn: 1 }, { schemeId: FC, nextReturn: 1 }, { schemeId: IMPS, nextReturn: 1 }]).onConflict('schemeId').merge()
 
-    await db.impsBatchNumber.bulkCreate([
+    await db.impsBatchNumbers().insert([
       { batchNumber: '1', invoiceNumber: 'S123456789A123456V001', frn: 1234567890 },
       { batchNumber: '1', invoiceNumber: 'S123456789B123456V001', frn: 1234567891 },
       { batchNumber: '1', invoiceNumber: 'S123456789C123456V001', frn: 1234567892 },
@@ -65,8 +63,7 @@ describe('process acknowledgement', () => {
 
   afterEach(async () => {
     jest.clearAllMocks()
-    await db.impsBatchNumber.destroy({ where: { invoiceNumber: 'S123456789E123456V001' }, truncate: true })
-    await db.impsAcknowledgement.destroy({ where: {}, truncate: true })
+    await truncate()
   })
 
   test('creates IMPS return file if all acknowledgements are received', async () => {
