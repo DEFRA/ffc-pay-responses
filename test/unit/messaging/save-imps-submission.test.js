@@ -24,7 +24,9 @@ describe('saveImpsSubmission', () => {
   const paymentRequest = {
     invoiceNumber: 'INV-123',
     frn: 'FRN-456',
-    batch: 'BATCH-001'
+    batch: 'BATCH-001',
+    trader: 'TRADER-1',
+    invoiceLines: []
   }
 
   beforeEach(() => {
@@ -48,7 +50,7 @@ describe('saveImpsSubmission', () => {
     expect(mockDb.tables.impsBatchNumbers).toHaveBeenCalledWith(mockDb.trx)
     expect(mockDb.builder.insert).toHaveBeenCalledWith({
       invoiceNumber: 'INV-123',
-      trader: undefined,
+      trader: 'TRADER-1',
       frn: 'FRN-456',
       batch: 'BATCH-001',
       batchNumber: 'BATCH-NUM-789'

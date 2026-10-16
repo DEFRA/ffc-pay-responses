@@ -3,6 +3,8 @@ const { getExistingImpsSubmission } = require('./get-existing-imps-submission')
 const { getImpsBatchNumber } = require('./get-imps-batch-number')
 const { sendResponsesFailureEvent } = require('../event/send-respones-failure-event')
 const { REPSONSES_PROCESSING_FAILED } = require('../constants/events')
+const TABLES = require('../constants/tables')
+const { pickColumns } = require('../constants/columns')
 
 const saveImpsSubmission = async (paymentRequest) => {
   const transaction = await startTransaction()
@@ -13,13 +15,7 @@ const saveImpsSubmission = async (paymentRequest) => {
       await transaction.rollback()
     } else {
       const batchNumber = getImpsBatchNumber(paymentRequest.batch)
-      await impsBatchNumbers(transaction).insert({
-        invoiceNumber: paymentRequest.invoiceNumber,
-        trader: paymentRequest.trader,
-        frn: paymentRequest.frn,
-        batch: paymentRequest.batch,
-        batchNumber
-      })
+      await impsBatchNumbers(transaction).insert(pickColumns({ ...paymentRequest, batchNumber }, TABLES.impsBatchNumbers))
       await transaction.commit()
     }
   } catch (error) {
