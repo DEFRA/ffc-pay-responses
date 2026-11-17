@@ -29,7 +29,7 @@ services:
       POSTGRES_USERNAME: ${POSTGRES_SCHEMA_USERNAME:-postgres}
       PROCESSING_ACTIVE: ${PROCESSING_ACTIVE:-true}
   ffc-pay-responses-postgres:
-    image: postgres:11.4-alpine
+    image: postgres:16.5-alpine
     environment:
       POSTGRES_DB: ffc_pay_responses
       POSTGRES_PASSWORD: ppp
